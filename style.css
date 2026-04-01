@@ -1,44 +1,45 @@
 :root {
-    --bg-main: #1a1a2e;
-    --board-bg: #16213e;
-    --cell-unrevealed: #0f3460;
-    --accent: #e94560;
-    --win: #4ecca3;
+    --bg-main: #1a1a2e; /* El fondo oscuro Cyberpunk */
+    --board-bg: #16213e; /* El azul oscuro del tablero */
+    --cell-unrevealed: #0f3460; /* Azul más claro para celdas tapadas */
+    --accent: #e94560; /* Rojo/Rosado neón para Game Over y acentos */
+    --win: #4ecca3; /* Verde neón para victoria */
     --text-light: #ffffff;
 }
 
-/* Reset básico para evitar espacios extra */
+/* Reset y optimización para móviles (Anti-Zoom) */
 * { 
     box-sizing: border-box; 
     margin: 0; 
     padding: 0; 
-    touch-action: manipulation; 
+    touch-action: manipulation; /* Mejora la respuesta táctil en móvil */
 }
 
 body {
     padding: 20px;
-    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-light);
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
     background-color: var(--bg-main);
-    /* Imagen de fondo con filtro oscuro */
+    /* Imagen de fondo con degradado oscuro Cyberpunk */
     background-image: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), 
-                      url('img/24782.png');
+                      url('img/24782.png'); /* Asegúrate de que esta imagen exista */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
 }
 
+/* PANEL SUPERIOR (header) */
 header {
     background: rgba(22, 33, 62, 0.95);
     padding: 20px;
     border-radius: 15px;
     text-align: center;
     width: 100%;
-    max-width: 420px; /* Ancho máximo del panel superior */
+    max-width: 420px; /* Ancho controlado */
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     margin-bottom: 20px;
 }
@@ -51,51 +52,55 @@ header {
     font-weight: bold;
 }
 
+/* INPUT DE MINAS */
 #input-minas {
     background: var(--bg-main);
-    color: var(--win);
+    color: var(--win); /* Letras verdes neón */
     border: 1px solid var(--cell-unrevealed);
     border-radius: 4px;
     width: 55px;
     text-align: center;
-    padding: 2px;
+    padding: 4px;
 }
 
+/* BOTÓN REINICIAR */
 #btn-reiniciar {
     width: 100%;
     padding: 12px;
-    background: var(--accent);
+    background: var(--accent); /* Color neón */
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;
-    transition: transform 0.2s;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    transition: transform 0.2s, background 0.2s;
 }
 
-#btn-reiniciar:active { transform: scale(0.98); }
+#btn-reiniciar:active {
+    transform: scale(0.95);
+}
 
-/* --- EL TABLERO (ESTRUCTURA CORREGIDA) --- */
+/* TABLERO (grid) */
 .grid {
     display: grid;
-    /* Forzamos 10 columnas que siempre ocupen el mismo ancho */
+    /* 10 columnas perfectas */
     grid-template-columns: repeat(10, 1fr); 
     gap: 4px;
     background: var(--board-bg);
     padding: 12px;
     border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    
-    /* Ancho controlado para que no se "encoja" */
     width: 100%;
-    max-width: 420px; 
+    max-width: 420px; /* Mismo ancho que el header */
     aspect-ratio: 1 / 1; /* Mantiene el tablero cuadrado */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
 
+/* CELDAS (Con Anti-Copia) */
 .celda {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Cada celda será un cuadrado perfecto */
+    aspect-ratio: 1/1;
     background: var(--cell-unrevealed);
     display: flex;
     align-items: center;
@@ -104,16 +109,22 @@ header {
     border-radius: 4px;
     cursor: pointer;
     font-size: 1.2rem;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.2s, transform 0.1s;
+    
+    /* --- BLOQUEO DE COPIAR Y SELECCIÓN EN MÓVIL --- */
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
+/* EFECTO HOVER EN CELDAS (Brillo Neón) */
 .celda:hover:not(.revelada) {
-    background: linear-gradient(135deg, #0f3460, #1e5494);
-    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+    background: #1e5494; /* Un azul más brillante */
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
+/* CELDA REVELADA (Gris) */
 .revelada {
     background: #e0e0e0 !important;
     color: #1a1a2e !important;
@@ -121,11 +132,12 @@ header {
     transform: none !important;
 }
 
-/* Colores de los números */
-.numero-1 { color: #45b6fe !important; }
-.numero-2 { color: #4ecca3 !important; }
-.numero-3 { color: #e94560 !important; }
+/* Colores de los números (Cyberpunk) */
+.numero-1 { color: #45b6fe !important; } /* Azul neón */
+.numero-2 { color: #4ecca3 !important; } /* Verde neón */
+.numero-3 { color: #e94560 !important; } /* Rojo neón */
 
+/* MENSAJE DE ESTADO (GAME OVER / VICTORIA) */
 #game-status {
     width: 100%;
     max-width: 420px;
@@ -134,36 +146,37 @@ header {
     border-radius: 10px;
     text-align: center;
     font-weight: bold;
-    text-transform: uppercase;
+    transition: all 0.3s ease;
 }
 
-.status-hidden { display: none; }
-.status-lost { display: block; background: var(--accent); box-shadow: 0 0 20px var(--accent); }
-.status-won { display: block; background: var(--win); box-shadow: 0 0 20px var(--win); }
+.status-hidden { display: none !important; }
+.status-lost { 
+    display: block; 
+    background: var(--accent); 
+    box-shadow: 0 0 20px var(--accent); /* Brillo neón de error */
+}
+.status-won { 
+    display: block; 
+    background: var(--win); 
+    box-shadow: 0 0 20px var(--win); /* Brillo neón de victoria */
+}
 
+/* CAJA DE INFO (Instrucciones) */
 #instrucciones-juego {
     background: rgba(22, 33, 62, 0.8);
-    /* Espaciado interno para que el texto no toque los bordes */
-    padding: 25px; 
+    padding: 25px;
     border-radius: 15px;
     max-width: 420px;
     width: 100%;
     text-align: center;
-    line-height: 1.6;
-    
-    /* --- EL CAMBIO CLAVE: MÁS ESPACIO EXTERIOR --- */
-    margin-top: 40px; 
+    margin-top: 40px; /* Separación con el tablero */
     margin-bottom: 30px;
-    
-    /* Un toque de borde sutil para que resalte del fondo */
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 #instrucciones-juego h3 {
-    margin-bottom: 15px;
-    color: var(--win); /* Usamos el verde éxito para el título */
-    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: var(--win);
 }
 
 #instrucciones-juego p {
@@ -171,5 +184,15 @@ header {
     color: rgba(255, 255, 255, 0.9);
 }
 
-footer { margin-top: auto; padding: 20px; opacity: 0.6; font-size: 0.8rem; }
-footer span { color: var(--accent); font-weight: bold; }
+/* FOOTER CON FIRMA (Restaurado) */
+footer {
+    margin-top: auto;
+    padding: 20px;
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+footer span { 
+    color: var(--accent); /* Tu firma en rojo neón */
+    font-weight: bold; 
+}
