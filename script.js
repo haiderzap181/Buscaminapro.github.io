@@ -3,19 +3,19 @@ const puntosElemento = document.getElementById('puntos');
 const statusElemento = document.getElementById('game-status');
 const inputMinas = document.getElementById('input-minas');
 
-const filas = 10;
-const columnas = 10;
-let numeroDeMinas = 15; 
-let juegoTerminado = false;
-let celdasPorRevelar; 
-let puntaje = 0;
+const sonidoExplosion = document.getElementById('sonido-explosion');
+const sonidoRevelar = document.getElementById('sonido-revelar');
+const sonidoVictoria = document.getElementById('sonido-victoria');
+
+const filas = 10, columnas = 10;
+let numeroDeMinas = 15, juegoTerminado = false, celdasPorRevelar, puntaje = 0;
 
 function crearTablero() {
-    // Validación de entrada
-    let cantidadDeseada = parseInt(inputMinas.value);
-    if (isNaN(cantidadDeseada) || cantidadDeseada < 15) { cantidadDeseada = 15; inputMinas.value = 15; }
-    else if (cantidadDeseada > 99) { cantidadDeseada = 99; inputMinas.value = 99; }
-    numeroDeMinas = cantidadDeseada;
+    let cant = parseInt(inputMinas.value);
+    if (isNaN(cant) || cant < 15) cant = 15;
+    if (cant > 99) cant = 99;
+    inputMinas.value = cant;
+    numeroDeMinas = cant;
 
     tableroElemento.innerHTML = '';
     juegoTerminado = false;
@@ -33,15 +33,10 @@ function crearTablero() {
         celda.dataset.id = i;
 
         celda.addEventListener('click', () => revelarCelda(celda));
-
-        // Ciclo de banderas: Bloquea menú del navegador 
         celda.addEventListener('contextmenu', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             if (celda.classList.contains('revelada') || juegoTerminado) return;
-
-            if (celda.innerText === '') { celda.innerText = '🚩'; celda.style.color = '#e94560'; }
-            else if (celda.innerText === '🚩') { celda.innerText = '?'; celda.style.color = '#f9d423'; }
-            else { celda.innerText = ''; }
+            celda.innerText = (celda.innerText === '') ? '🚩' : (celda.innerText === '🚩' ? '?' : '');
         });
 
         tableroElemento.appendChild(celda);
@@ -49,24 +44,33 @@ function crearTablero() {
 }
 
 function generarDatos() {
-    const minas = Array(numeroDeMinas).fill('mina');
-    const vacios = Array((filas * columnas) - numeroDeMinas).fill('vacio');
-    return vacios.concat(minas).sort(() => Math.random() - 0.5);
+    const m = Array(numeroDeMinas).fill('mina'), v = Array(100 - numeroDeMinas).fill('vacio');
+    return v.concat(m).sort(() => Math.random() - 0.5);
 }
 
 function revelarCelda(celda) {
-    if (celda.classList.contains('revelada') || juegoTerminado || celda.innerText === '🚩') return;
-
-    celda.classList.add('revelada');
+    if (!celda || celda.classList.contains('revelada') || juegoTerminado || celda.innerText === '🚩') return;
+    
     const id = parseInt(celda.dataset.id);
 
     if (celda.dataset.tipo === 'mina') {
+        sonidoExplosion.volume = 0.5;
+        sonidoExplosion.currentTime = 0;
+        sonidoExplosion.play();
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+        celda.classList.add('revelada');
         celda.innerText = '💣';
         juegoTerminado = true;
         statusElemento.innerText = '💥 ¡GAME OVER! 💥';
         statusElemento.className = 'status-lost';
         revelarTodas();
     } else {
+        const clic = sonidoRevelar.cloneNode();
+        clic.volume = 0.4;
+        clic.play();
+
+        celda.classList.add('revelada');
         puntaje += 100;
         puntosElemento.innerText = puntaje;
         celdasPorRevelar--;
@@ -75,12 +79,13 @@ function revelarCelda(celda) {
         if (total > 0) {
             celda.innerText = total;
             celda.classList.add('numero-' + total);
-        } else {
-            expandir(id);
-        }
+        } else expandir(id);
 
-        if (celdasPorRevelar === 0) {
+        if (celdasPorRevelar === 0 && !juegoTerminado) {
             juegoTerminado = true;
+            sonidoVictoria.volume = 0.6;
+            sonidoVictoria.play();
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
             statusElemento.innerText = '🏆 ¡VICTORIA! 🏆';
             statusElemento.className = 'status-won';
         }
@@ -89,28 +94,24 @@ function revelarCelda(celda) {
 
 function contarVecinos(id) {
     let m = 0;
-    const f = Math.floor(id / columnas), c = id % columnas;
-    for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-            const nf = f + i, nc = c + j;
-            if (nf >= 0 && nf < filas && nc >= 0 && nc < columnas) {
-                const vId = nf * columnas + nc;
-                if (document.querySelectorAll('.celda')[vId].dataset.tipo === 'mina') m++;
-            }
-        }
+    const f = Math.floor(id/10), c = id%10;
+    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
+        const nf=f+i, nc=c+j;
+        if(nf>=0 && nf<10 && nc>=0 && nc<10 && document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
     }
     return m;
 }
 
 function expandir(id) {
-    const f = Math.floor(id / columnas), c = id % columnas;
-    for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-            const nf = f + i, nc = c + j;
-            if (nf >= 0 && nf < filas && nc >= 0 && nc < columnas) {
-                const vId = nf * columnas + nc;
-                const vecino = document.querySelectorAll('.celda')[vId];
-                if (!vecino.classList.contains('revelada')) revelarCelda(vecino);
+    const f = Math.floor(id/10), c = id%10;
+    let delay = 0;
+    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
+        const nf=f+i, nc=c+j;
+        if(nf>=0 && nf<10 && nc>=0 && nc<10) {
+            const vecino = document.querySelectorAll('.celda')[nf*10+nc];
+            if (!vecino.classList.contains('revelada')) {
+                setTimeout(() => revelarCelda(vecino), delay);
+                delay += 40;
             }
         }
     }
