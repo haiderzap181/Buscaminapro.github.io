@@ -2,6 +2,7 @@ const tableroElemento = document.getElementById('tablero');
 const puntosElemento = document.getElementById('puntos');
 const statusElemento = document.getElementById('game-status');
 const inputMinas = document.getElementById('input-minas');
+const timerElemento = document.getElementById('timer'); // Nuevo
 
 const sonidoExplosion = document.getElementById('sonido-explosion');
 const sonidoRevelar = document.getElementById('sonido-revelar');
@@ -10,6 +11,11 @@ const sonidoVictoria = document.getElementById('sonido-victoria');
 let filas = 10, columnas = 10, numeroDeMinas = 15;
 let juegoTerminado = false, celdasPorRevelar, puntaje = 0;
 let ultimoSonidoTime = 0;
+
+// VARIABLES DEL CRONÓMETRO
+let tiempo = 0;
+let intervaloTiempo;
+let primerClic = true;
 
 function crearTablero() {
     let cant = parseInt(inputMinas.value);
@@ -22,9 +28,17 @@ function crearTablero() {
     juegoTerminado = false;
     puntaje = 0;
     puntosElemento.innerText = puntaje;
-    statusElemento.className = 'status-hidden';
-    celdasPorRevelar = (filas * columnas) - numeroDeMinas;
     
+    // REINICIAR CRONÓMETRO
+    detenerTiempo();
+    tiempo = 0;
+    timerElemento.innerText = tiempo;
+    primerClic = true;
+
+    statusElemento.className = 'status-hidden';
+    statusElemento.innerText = '';
+
+    celdasPorRevelar = (filas * columnas) - numeroDeMinas;
     const datos = generarDatos();
 
     for (let i = 0; i < filas * columnas; i++) {
@@ -33,15 +47,36 @@ function crearTablero() {
         celda.dataset.tipo = datos[i]; 
         celda.dataset.id = i;
 
-        celda.addEventListener('click', () => revelarCelda(celda));
+        celda.addEventListener('click', () => {
+            // INICIAR TIEMPO AL PRIMER CLIC
+            if (primerClic && !juegoTerminado) {
+                iniciarTiempo();
+                primerClic = false;
+            }
+            revelarCelda(celda);
+        });
+
         celda.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (celda.classList.contains('revelada') || juegoTerminado) return;
+            if (navigator.vibrate) navigator.vibrate(30);
             celda.innerText = (celda.innerText === '') ? '🚩' : (celda.innerText === '🚩' ? '?' : '');
         });
 
         tableroElemento.appendChild(celda);
     }
+}
+
+// FUNCIONES DEL RELOJ
+function iniciarTiempo() {
+    intervaloTiempo = setInterval(() => {
+        tiempo++;
+        timerElemento.innerText = tiempo;
+    }, 1000);
+}
+
+function detenerTiempo() {
+    clearInterval(intervaloTiempo);
 }
 
 function generarDatos() {
@@ -55,6 +90,7 @@ function revelarCelda(celda) {
     const id = parseInt(celda.dataset.id);
 
     if (celda.dataset.tipo === 'mina') {
+        detenerTiempo(); // DETENER AL PERDER
         sonidoExplosion.volume = 0.5;
         sonidoExplosion.play().catch(()=>{});
         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
@@ -86,24 +122,24 @@ function revelarCelda(celda) {
         } else expandir(id);
 
         if (celdasPorRevelar === 0 && !juegoTerminado) {
+            detenerTiempo(); // DETENER AL GANAR
             juegoTerminado = true;
             sonidoVictoria.volume = 0.6;
             sonidoVictoria.play().catch(()=>{});
             if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
-            statusElemento.innerText = '🏆 ¡VICTORIA! 🏆';
+            statusElemento.innerText = `🏆 ¡VICTORIA EN ${tiempo}s! 🏆`;
             statusElemento.className = 'status-won';
         }
     }
 }
 
+// ... (Las funciones contarVecinos, expandir y revelarTodas se mantienen igual)
 function contarVecinos(id) {
     let m = 0;
     const f = Math.floor(id/10), c = id%10;
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
-        if(nf>=0 && nf<10 && nc>=0 && nc<10) {
-            if(document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
-        }
+        if(nf>=0 && nf<10 && nc>=0 && nc<10 && document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
     }
     return m;
 }
