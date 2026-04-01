@@ -2,7 +2,7 @@ const tableroElemento = document.getElementById('tablero');
 const puntosElemento = document.getElementById('puntos');
 const statusElemento = document.getElementById('game-status');
 const inputMinas = document.getElementById('input-minas');
-const timerElemento = document.getElementById('timer'); // Nuevo
+const timerElemento = document.getElementById('timer');
 
 const sonidoExplosion = document.getElementById('sonido-explosion');
 const sonidoRevelar = document.getElementById('sonido-revelar');
@@ -11,33 +11,29 @@ const sonidoVictoria = document.getElementById('sonido-victoria');
 let filas = 10, columnas = 10, numeroDeMinas = 15;
 let juegoTerminado = false, celdasPorRevelar, puntaje = 0;
 let ultimoSonidoTime = 0;
+let tiempo = 0, intervaloTiempo, primerClic = true;
 
-// VARIABLES DEL CRONÓMETRO
-let tiempo = 0;
-let intervaloTiempo;
-let primerClic = true;
+// Cache de celdas para acceso ultra rápido
+let celdasCache = [];
 
 function crearTablero() {
-    let cant = parseInt(inputMinas.value);
-    if (isNaN(cant) || cant < 15) cant = 15;
-    if (cant > 99) cant = 99;
+    let cant = parseInt(inputMinas.value) || 15;
+    cant = Math.min(Math.max(cant, 15), 99);
     inputMinas.value = cant;
     numeroDeMinas = cant;
 
     tableroElemento.innerHTML = '';
+    celdasCache = []; // Limpiar cache
     juegoTerminado = false;
     puntaje = 0;
     puntosElemento.innerText = puntaje;
     
-    // REINICIAR CRONÓMETRO
     detenerTiempo();
     tiempo = 0;
     timerElemento.innerText = tiempo;
     primerClic = true;
 
     statusElemento.className = 'status-hidden';
-    statusElemento.innerText = '';
-
     celdasPorRevelar = (filas * columnas) - numeroDeMinas;
     const datos = generarDatos();
 
@@ -48,7 +44,6 @@ function crearTablero() {
         celda.dataset.id = i;
 
         celda.addEventListener('click', () => {
-            // INICIAR TIEMPO AL PRIMER CLIC
             if (primerClic && !juegoTerminado) {
                 iniciarTiempo();
                 primerClic = false;
@@ -59,15 +54,15 @@ function crearTablero() {
         celda.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (celda.classList.contains('revelada') || juegoTerminado) return;
-            if (navigator.vibrate) navigator.vibrate(30);
+            if (navigator.vibrate) navigator.vibrate(20); 
             celda.innerText = (celda.innerText === '') ? '🚩' : (celda.innerText === '🚩' ? '?' : '');
         });
 
         tableroElemento.appendChild(celda);
+        celdasCache.push(celda); // Guardamos la referencia
     }
 }
 
-// FUNCIONES DEL RELOJ
 function iniciarTiempo() {
     intervaloTiempo = setInterval(() => {
         tiempo++;
@@ -90,10 +85,9 @@ function revelarCelda(celda) {
     const id = parseInt(celda.dataset.id);
 
     if (celda.dataset.tipo === 'mina') {
-        detenerTiempo(); // DETENER AL PERDER
-        sonidoExplosion.volume = 0.5;
+        detenerTiempo();
         sonidoExplosion.play().catch(()=>{});
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        if (navigator.vibrate) navigator.vibrate([150, 50, 150]);
 
         celda.classList.add('revelada');
         celda.innerText = '💣';
@@ -102,11 +96,12 @@ function revelarCelda(celda) {
         statusElemento.className = 'status-lost';
         revelarTodas();
     } else {
+        // Optimización de sonido: solo suena si no ha sonado hace 85ms
         const ahora = Date.now();
-        if (ahora - ultimoSonidoTime > 75) {
-            const clic = sonidoRevelar.cloneNode();
-            clic.volume = 0.3;
-            clic.play().catch(()=>{});
+        if (ahora - ultimoSonidoTime > 85) {
+            sonidoRevelar.currentTime = 0;
+            sonidoRevelar.volume = 0.3;
+            sonidoRevelar.play().catch(()=>{});
             ultimoSonidoTime = ahora;
         }
 
@@ -119,27 +114,30 @@ function revelarCelda(celda) {
         if (total > 0) {
             celda.innerText = total;
             celda.classList.add('numero-' + total);
-        } else expandir(id);
+        } else {
+            // Solo vibramos una vez al iniciar una expansión masiva
+            if (navigator.vibrate) navigator.vibrate(15); 
+            expandir(id);
+        }
 
         if (celdasPorRevelar === 0 && !juegoTerminado) {
-            detenerTiempo(); // DETENER AL GANAR
+            detenerTiempo();
             juegoTerminado = true;
-            sonidoVictoria.volume = 0.6;
             sonidoVictoria.play().catch(()=>{});
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
             statusElemento.innerText = `🏆 ¡VICTORIA EN ${tiempo}s! 🏆`;
             statusElemento.className = 'status-won';
         }
     }
 }
 
-// ... (Las funciones contarVecinos, expandir y revelarTodas se mantienen igual)
 function contarVecinos(id) {
     let m = 0;
     const f = Math.floor(id/10), c = id%10;
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
-        if(nf>=0 && nf<10 && nc>=0 && nc<10 && document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
+        if(nf>=0 && nf<10 && nc>=0 && nc<10) {
+            if(celdasCache[nf*10+nc].dataset.tipo === 'mina') m++;
+        }
     }
     return m;
 }
@@ -150,18 +148,22 @@ function expandir(id) {
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
         if(nf>=0 && nf<10 && nc>=0 && nc<10) {
-            const vecino = document.querySelectorAll('.celda')[nf*10+nc];
+            const vecino = celdasCache[nf*10+nc];
             if (!vecino.classList.contains('revelada')) {
+                // Aumentamos un poco el delay para dar aire al procesador móvil
                 setTimeout(() => revelarCelda(vecino), delay);
-                delay += 45;
+                delay += 55; 
             }
         }
     }
 }
 
 function revelarTodas() {
-    document.querySelectorAll('.celda').forEach(c => {
-        if(c.dataset.tipo === 'mina') { c.classList.add('revelada'); c.innerText = '💣'; }
+    celdasCache.forEach(c => {
+        if(c.dataset.tipo === 'mina') {
+            c.classList.add('revelada');
+            c.innerText = '💣';
+        }
     });
 }
 
