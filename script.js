@@ -7,8 +7,9 @@ const sonidoExplosion = document.getElementById('sonido-explosion');
 const sonidoRevelar = document.getElementById('sonido-revelar');
 const sonidoVictoria = document.getElementById('sonido-victoria');
 
-const filas = 10, columnas = 10;
-let numeroDeMinas = 15, juegoTerminado = false, celdasPorRevelar, puntaje = 0;
+let filas = 10, columnas = 10, numeroDeMinas = 15;
+let juegoTerminado = false, celdasPorRevelar, puntaje = 0;
+let ultimoSonidoTime = 0;
 
 function crearTablero() {
     let cant = parseInt(inputMinas.value);
@@ -55,8 +56,7 @@ function revelarCelda(celda) {
 
     if (celda.dataset.tipo === 'mina') {
         sonidoExplosion.volume = 0.5;
-        sonidoExplosion.currentTime = 0;
-        sonidoExplosion.play();
+        sonidoExplosion.play().catch(()=>{});
         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
         celda.classList.add('revelada');
@@ -66,9 +66,13 @@ function revelarCelda(celda) {
         statusElemento.className = 'status-lost';
         revelarTodas();
     } else {
-        const clic = sonidoRevelar.cloneNode();
-        clic.volume = 0.4;
-        clic.play();
+        const ahora = Date.now();
+        if (ahora - ultimoSonidoTime > 75) {
+            const clic = sonidoRevelar.cloneNode();
+            clic.volume = 0.3;
+            clic.play().catch(()=>{});
+            ultimoSonidoTime = ahora;
+        }
 
         celda.classList.add('revelada');
         puntaje += 100;
@@ -84,7 +88,7 @@ function revelarCelda(celda) {
         if (celdasPorRevelar === 0 && !juegoTerminado) {
             juegoTerminado = true;
             sonidoVictoria.volume = 0.6;
-            sonidoVictoria.play();
+            sonidoVictoria.play().catch(()=>{});
             if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
             statusElemento.innerText = '🏆 ¡VICTORIA! 🏆';
             statusElemento.className = 'status-won';
@@ -97,7 +101,9 @@ function contarVecinos(id) {
     const f = Math.floor(id/10), c = id%10;
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
-        if(nf>=0 && nf<10 && nc>=0 && nc<10 && document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
+        if(nf>=0 && nf<10 && nc>=0 && nc<10) {
+            if(document.querySelectorAll('.celda')[nf*10+nc].dataset.tipo==='mina') m++;
+        }
     }
     return m;
 }
@@ -111,7 +117,7 @@ function expandir(id) {
             const vecino = document.querySelectorAll('.celda')[nf*10+nc];
             if (!vecino.classList.contains('revelada')) {
                 setTimeout(() => revelarCelda(vecino), delay);
-                delay += 40;
+                delay += 45;
             }
         }
     }
