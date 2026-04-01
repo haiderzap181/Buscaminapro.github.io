@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Buscaminas Pro | zhaider181</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,12 +11,12 @@
         <h1>Buscaminas Pro</h1>
         <div class="stats-panel">
             <div class="control-minas">
-                <label for="input-minas">💣 Minas (15-99):</label>
+                <label for="input-minas">💣 Minas:</label>
                 <input type="number" id="input-minas" value="15" min="15" max="99">
             </div>
             <div>🏆 Puntos: <span id="puntos">0</span></div>
         </div>
-        <button id="btn-reiniciar">Reiniciar Partida</button>
+        <button id="btn-reiniciar">REINICIAR PARTIDA</button>
     </header>
 
     <main>
@@ -24,13 +24,9 @@
         <div id="game-status" class="status-hidden"></div>
         
         <section id="instrucciones-juego">
-            <h3>Guía de Supervivencia</h3>
-            <p>Los números indican minas cercanas. ¡Usa clic derecho (o mantén pulsado en móvil) para poner banderas!</p>
-            <div class="guia-colores">
-                <span class="numero-1">1: Seguro</span> | 
-                <span class="numero-2">2: Alerta</span> | 
-                <span class="numero-3">3: Peligro</span>
-            </div>
+            <h3>¿Qué significan los números?</h3>
+            <p>Indican cuántas minas hay en las 8 casillas circundantes.</p>
+            <p><span class="numero-1">1</span> | <span class="numero-2">2</span> | <span class="numero-3">3</span></p>
         </section>
     </main>
 
