@@ -7,18 +7,26 @@
     --text-light: #ffffff;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Reset básico para evitar espacios extra */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    touch-action: manipulation; 
+}
 
 body {
-    padding: 15px;
-    font-family: 'Segoe UI', sans-serif;
+    padding: 20px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     color: var(--text-light);
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
     background-color: var(--bg-main);
-    background-image: linear-gradient(rgba(26, 26, 46, 0.85), rgba(26, 26, 46, 0.85)), url('img/24782.png');
+    /* Imagen de fondo con filtro oscuro */
+    background-image: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), 
+                      url('img/24782.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -27,29 +35,30 @@ body {
 header {
     background: rgba(22, 33, 62, 0.95);
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 15px;
     text-align: center;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px; /* Ancho máximo del panel superior */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     margin-bottom: 20px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
 
 .stats-panel {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
     align-items: center;
+    margin: 15px 0;
+    font-weight: bold;
 }
 
 #input-minas {
     background: var(--bg-main);
     color: var(--win);
     border: 1px solid var(--cell-unrevealed);
+    border-radius: 4px;
     width: 55px;
     text-align: center;
-    border-radius: 4px;
+    padding: 2px;
 }
 
 #btn-reiniciar {
@@ -58,62 +67,74 @@ header {
     background: var(--accent);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;
+    transition: transform 0.2s;
 }
 
+#btn-reiniciar:active { transform: scale(0.98); }
+
+/* --- EL TABLERO (ESTRUCTURA CORREGIDA) --- */
 .grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    /* Forzamos 10 columnas que siempre ocupen el mismo ancho */
+    grid-template-columns: repeat(10, 1fr); 
     gap: 4px;
     background: var(--board-bg);
-    padding: 10px;
+    padding: 12px;
     border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    
+    /* Ancho controlado para que no se "encoja" */
     width: 100%;
-    max-width: 400px;
+    max-width: 420px; 
+    aspect-ratio: 1 / 1; /* Mantiene el tablero cuadrado */
 }
 
 .celda {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1; /* Cada celda será un cuadrado perfecto */
     background: var(--cell-unrevealed);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     border-radius: 4px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
     cursor: pointer;
     font-size: 1.2rem;
+    border: 1px solid transparent;
+    transition: background 0.2s, transform 0.1s;
+    user-select: none;
 }
 
 .celda:hover:not(.revelada) {
-    background: linear-gradient(135deg, #0f3460, #e94560);
-    box-shadow: inset 0 0 8px rgba(233, 69, 96, 0.8);
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #0f3460, #1e5494);
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
 }
 
 .revelada {
     background: #e0e0e0 !important;
     color: #1a1a2e !important;
+    border: 1px solid #bdc3c7 !important;
     transform: none !important;
 }
 
+/* Colores de los números */
 .numero-1 { color: #45b6fe !important; }
 .numero-2 { color: #4ecca3 !important; }
 .numero-3 { color: #e94560 !important; }
 
 #game-status {
+    width: 100%;
+    max-width: 420px;
     margin: 20px 0;
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: center;
-    width: 100%;
-    max-width: 400px;
     font-weight: bold;
+    text-transform: uppercase;
 }
 
 .status-hidden { display: none; }
@@ -122,11 +143,32 @@ header {
 
 #instrucciones-juego {
     background: rgba(22, 33, 62, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    margin-top: 10px;
+    /* Espaciado interno para que el texto no toque los bordes */
+    padding: 25px; 
+    border-radius: 15px;
+    max-width: 420px;
+    width: 100%;
     text-align: center;
+    line-height: 1.6;
+    
+    /* --- EL CAMBIO CLAVE: MÁS ESPACIO EXTERIOR --- */
+    margin-top: 40px; 
+    margin-bottom: 30px;
+    
+    /* Un toque de borde sutil para que resalte del fondo */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+#instrucciones-juego h3 {
+    margin-bottom: 15px;
+    color: var(--win); /* Usamos el verde éxito para el título */
+    font-size: 1.2rem;
+}
+
+#instrucciones-juego p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 footer { margin-top: auto; padding: 20px; opacity: 0.6; font-size: 0.8rem; }
