@@ -13,7 +13,8 @@ let juegoTerminado = false, celdasPorRevelar, puntaje = 0;
 let ultimoSonidoTime = 0;
 let tiempo = 0, intervaloTiempo, primerClic = true;
 
-// Cache de celdas para acceso ultra rápido
+// SEGURIDAD: Datos fuera del alcance del Inspector HTML
+let mapaReal = []; 
 let celdasCache = [];
 
 function crearTablero() {
@@ -23,7 +24,7 @@ function crearTablero() {
     numeroDeMinas = cant;
 
     tableroElemento.innerHTML = '';
-    celdasCache = []; // Limpiar cache
+    celdasCache = [];
     juegoTerminado = false;
     puntaje = 0;
     puntosElemento.innerText = puntaje;
@@ -35,13 +36,14 @@ function crearTablero() {
 
     statusElemento.className = 'status-hidden';
     celdasPorRevelar = (filas * columnas) - numeroDeMinas;
-    const datos = generarDatos();
+
+    // Generamos el mapa en memoria privada
+    mapaReal = generarDatos(); 
 
     for (let i = 0; i < filas * columnas; i++) {
         const celda = document.createElement('div');
         celda.classList.add('celda');
-        celda.dataset.tipo = datos[i]; 
-        celda.dataset.id = i;
+        celda.dataset.id = i; // Solo el ID es visible
 
         celda.addEventListener('click', () => {
             if (primerClic && !juegoTerminado) {
@@ -54,12 +56,12 @@ function crearTablero() {
         celda.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             if (celda.classList.contains('revelada') || juegoTerminado) return;
-            if (navigator.vibrate) navigator.vibrate(20); 
+            if (navigator.vibrate) navigator.vibrate(30); 
             celda.innerText = (celda.innerText === '') ? '🚩' : (celda.innerText === '🚩' ? '?' : '');
         });
 
         tableroElemento.appendChild(celda);
-        celdasCache.push(celda); // Guardamos la referencia
+        celdasCache.push(celda);
     }
 }
 
@@ -83,11 +85,12 @@ function revelarCelda(celda) {
     if (!celda || celda.classList.contains('revelada') || juegoTerminado || celda.innerText === '🚩') return;
     
     const id = parseInt(celda.dataset.id);
+    const tipoReal = mapaReal[id]; // Consultamos la variable segura
 
-    if (celda.dataset.tipo === 'mina') {
+    if (tipoReal === 'mina') {
         detenerTiempo();
         sonidoExplosion.play().catch(()=>{});
-        if (navigator.vibrate) navigator.vibrate([150, 50, 150]);
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
         celda.classList.add('revelada');
         celda.innerText = '💣';
@@ -96,11 +99,9 @@ function revelarCelda(celda) {
         statusElemento.className = 'status-lost';
         revelarTodas();
     } else {
-        // Optimización de sonido: solo suena si no ha sonado hace 85ms
         const ahora = Date.now();
-        if (ahora - ultimoSonidoTime > 85) {
+        if (ahora - ultimoSonidoTime > 80) {
             sonidoRevelar.currentTime = 0;
-            sonidoRevelar.volume = 0.3;
             sonidoRevelar.play().catch(()=>{});
             ultimoSonidoTime = ahora;
         }
@@ -115,7 +116,6 @@ function revelarCelda(celda) {
             celda.innerText = total;
             celda.classList.add('numero-' + total);
         } else {
-            // Solo vibramos una vez al iniciar una expansión masiva
             if (navigator.vibrate) navigator.vibrate(15); 
             expandir(id);
         }
@@ -124,6 +124,7 @@ function revelarCelda(celda) {
             detenerTiempo();
             juegoTerminado = true;
             sonidoVictoria.play().catch(()=>{});
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
             statusElemento.innerText = `🏆 ¡VICTORIA EN ${tiempo}s! 🏆`;
             statusElemento.className = 'status-won';
         }
@@ -136,7 +137,7 @@ function contarVecinos(id) {
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
         if(nf>=0 && nf<10 && nc>=0 && nc<10) {
-            if(celdasCache[nf*10+nc].dataset.tipo === 'mina') m++;
+            if(mapaReal[nf*10+nc] === 'mina') m++;
         }
     }
     return m;
@@ -150,22 +151,29 @@ function expandir(id) {
         if(nf>=0 && nf<10 && nc>=0 && nc<10) {
             const vecino = celdasCache[nf*10+nc];
             if (!vecino.classList.contains('revelada')) {
-                // Aumentamos un poco el delay para dar aire al procesador móvil
                 setTimeout(() => revelarCelda(vecino), delay);
-                delay += 55; 
+                delay += 50; 
             }
         }
     }
 }
 
 function revelarTodas() {
-    celdasCache.forEach(c => {
-        if(c.dataset.tipo === 'mina') {
+    celdasCache.forEach((c, index) => {
+        if(mapaReal[index] === 'mina') {
             c.classList.add('revelada');
             c.innerText = '💣';
         }
     });
 }
+
+// --- BLOQUEO DE INSPECTOR Y ATAJOS ---
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) return false; // Bloquear F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+};
 
 document.getElementById('btn-reiniciar').addEventListener('click', crearTablero);
 window.onload = crearTablero;
