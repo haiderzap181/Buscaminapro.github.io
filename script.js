@@ -1,6 +1,5 @@
 const tableroElemento = document.getElementById('tablero');
 const puntosElemento = document.getElementById('puntos');
-const statusElemento = document.getElementById('game-status');
 const inputMinas = document.getElementById('input-minas');
 const timerElemento = document.getElementById('timer');
 const listaRecordsElemento = document.getElementById('lista-records');
@@ -9,24 +8,45 @@ const sonidoExplosion = document.getElementById('sonido-explosion');
 const sonidoRevelar = document.getElementById('sonido-revelar');
 const sonidoVictoria = document.getElementById('sonido-victoria');
 const sonidoAmbiente = document.getElementById('sonido-ambiente');
+const sonidoRisa = document.getElementById('sonido-risa');
 
 let mapaReal = [], celdasCache = [], juegoTerminado = false;
 let tiempo = 0, intervaloTiempo, primerClic = true, puntaje = 0, celdasPorRevelar;
 let musicaMutada = false;
 
+function obtenerRango(bananas, tiempo) {
+    if (bananas >= 45 || (bananas >= 30 && tiempo <= 60)) {
+        return 'img/rango03.png';
+    }
+    else if (bananas >= 25 || (bananas >= 15 && tiempo <= 90)) {
+        return 'img/rango02.png';
+    }
+    else {
+        return 'img/rango01.png';
+    }
+}
+
 function cargarRecords() {
     const records = JSON.parse(localStorage.getItem('monkey_records')) || [];
     listaRecordsElemento.innerHTML = '';
     if (records.length === 0) { listaRecordsElemento.innerHTML = '<tr><td colspan="4" style="padding:20px; opacity:0.6">Sin récords aún</td></tr>'; return; }
+    
     records.sort((a, b) => b.puntaje - a.puntaje);
+    
     records.slice(0, 5).forEach(rec => {
-        listaRecordsElemento.innerHTML += `<tr><td>${rec.puntaje}</td><td>${rec.tiempo}s</td><td>${rec.bananas}</td><td>${rec.fecha}</td></tr>`;
+        const iconoRango = obtenerRango(rec.bananas, rec.tiempo);
+        listaRecordsElemento.innerHTML += `<tr>
+            <td>${rec.puntaje}</td>
+            <td>${rec.tiempo}s</td>
+            <td>${rec.bananas}</td>
+            <td><img src="${iconoRango}" class="icono-rango" alt="Rango"></td>
+        </tr>`;
     });
 }
 
 function guardarRecord() {
     const records = JSON.parse(localStorage.getItem('monkey_records')) || [];
-    records.push({ puntaje, tiempo, bananas: parseInt(inputMinas.value), fecha: new Date().toLocaleDateString() });
+    records.push({ puntaje, tiempo, bananas: parseInt(inputMinas.value) });
     localStorage.setItem('monkey_records', JSON.stringify(records));
     cargarRecords();
 }
@@ -35,7 +55,6 @@ function crearTablero() {
     cargarRecords();
     document.getElementById('modal-derrota').classList.remove('mostrar');
     document.getElementById('modal-victoria').classList.remove('mostrar'); 
-    statusElemento.className = 'status-hidden';
     let numMinas = parseInt(inputMinas.value) || 15;
     tableroElemento.innerHTML = '';
     celdasCache = []; juegoTerminado = false; primerClic = true;
@@ -53,21 +72,12 @@ function crearTablero() {
         const celda = document.createElement('div');
         celda.classList.add('celda');
         celda.dataset.id = i;
-        celda.addEventListener('click', () => {
-            if (primerClic && !juegoTerminado) { 
-                intervaloTiempo = setInterval(() => { tiempo++; timerElemento.innerText = tiempo; }, 1000);
-                
-                // Si el jugador no lo ha mutado, arranca la música
-                if(sonidoAmbiente && !musicaMutada) { 
-                    sonidoAmbiente.volume = 0.3; 
-                    sonidoAmbiente.play().catch(()=>{}); 
-                }
-                primerClic = false; 
-            }
-            revelarCelda(celda);
-        });
-        celda.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
+
+        let tiempoPresionado;
+        let esPulsacionLarga = false;
+        let movioElDedo = false;
+
+        const alternarBandera = () => {
             if (juegoTerminado || celda.classList.contains('revelada')) return;
             if (celda.innerHTML === '') {
                 celda.innerHTML = '<i class="fas fa-flag"></i>';
@@ -76,7 +86,57 @@ function crearTablero() {
             } else {
                 celda.innerHTML = '';
             }
+        };
+
+        celda.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            alternarBandera();
         });
+
+        celda.addEventListener('touchstart', (e) => {
+            if (juegoTerminado || celda.classList.contains('revelada')) return;
+            esPulsacionLarga = false;
+            movioElDedo = false;
+            
+            tiempoPresionado = setTimeout(() => {
+                if (!movioElDedo) {
+                    esPulsacionLarga = true;
+                    alternarBandera();
+                    if (navigator.vibrate) { navigator.vibrate(50); }
+                }
+            }, 400); 
+        });
+
+        celda.addEventListener('touchmove', () => {
+            movioElDedo = true;
+            clearTimeout(tiempoPresionado);
+        });
+
+        celda.addEventListener('touchend', (e) => {
+            clearTimeout(tiempoPresionado);
+            if (esPulsacionLarga) {
+                e.preventDefault(); 
+            }
+        });
+
+        celda.addEventListener('touchcancel', () => {
+            clearTimeout(tiempoPresionado);
+        });
+
+        celda.addEventListener('click', (e) => {
+            if (esPulsacionLarga) return; 
+
+            if (primerClic && !juegoTerminado) { 
+                intervaloTiempo = setInterval(() => { tiempo++; timerElemento.innerText = tiempo; }, 1000);
+                if(sonidoAmbiente && !musicaMutada) { 
+                    sonidoAmbiente.volume = 0.3; 
+                    sonidoAmbiente.play().catch(()=>{}); 
+                }
+                primerClic = false; 
+            }
+            revelarCelda(celda);
+        });
+        
         tableroElemento.appendChild(celda);
         celdasCache.push(celda);
     }
@@ -91,6 +151,8 @@ function revelarCelda(celda) {
         if(sonidoAmbiente) sonidoAmbiente.pause(); 
         
         if(sonidoExplosion) { sonidoExplosion.volume = 0.4; sonidoExplosion.play().catch(()=>{}); }
+        if(sonidoRisa) { sonidoRisa.volume = 0.6; sonidoRisa.play().catch(()=>{}); }
+        
         celdasCache.forEach((c, idx) => { if(mapaReal[idx] === 'mina') { c.innerHTML = ''; c.classList.add('revelada', 'bomba-revelada'); } });
         
         setTimeout(() => {
@@ -112,7 +174,6 @@ function revelarCelda(celda) {
             if(sonidoAmbiente) sonidoAmbiente.pause(); 
             
             if(sonidoVictoria) { sonidoVictoria.play().catch(()=>{}); }
-            statusElemento.innerText = '🏆 ¡HAS GANADO! 🏆'; statusElemento.className = 'status-won';
             guardarRecord();
             
             setTimeout(() => {
@@ -169,27 +230,30 @@ document.getElementById('btn-toggle-gui').addEventListener('click', () => {
     document.getElementById('instrucciones-content').classList.toggle('active');
 });
 
-// --- LÓGICA DEL BOTÓN DE MUTEAR ---
+document.getElementById('btn-toggle-records').addEventListener('click', () => {
+    document.getElementById('records-content').classList.toggle('active');
+});
+
+document.getElementById('btn-borrar-records').addEventListener('click', () => {
+    if (confirm('¿Estás seguro de que deseas restablecer todos los récords? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('monkey_records');
+        cargarRecords(); 
+    }
+});
+
 const btnMutear = document.getElementById('btn-mutear');
 btnMutear.addEventListener('click', () => {
-    musicaMutada = !musicaMutada; // Alternar estado
-    
-    if(sonidoAmbiente) {
-        sonidoAmbiente.muted = musicaMutada; // Mutea el elemento de audio directamente
-    }
+    musicaMutada = !musicaMutada; 
+    if(sonidoAmbiente) { sonidoAmbiente.muted = musicaMutada; }
     
     if (musicaMutada) {
-        // Estado Apagado
         btnMutear.classList.remove('fa-volume-up');
         btnMutear.classList.add('fa-volume-mute');
-        btnMutear.style.color = '#ff4d4d'; // Rojo
+        btnMutear.style.color = '#ff4d4d'; 
     } else {
-        // Estado Prendido
         btnMutear.classList.remove('fa-volume-mute');
         btnMutear.classList.add('fa-volume-up');
-        btnMutear.style.color = 'var(--accent)'; // Vuelve a amarillo
-        
-        // Si el juego está corriendo y no está pausado por perder/ganar, forzamos play si estaba mudo
+        btnMutear.style.color = 'var(--accent)'; 
         if (!primerClic && !juegoTerminado && sonidoAmbiente.paused) {
             sonidoAmbiente.play().catch(()=>{});
         }
