@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Monkey Banana | zhaider181</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -28,21 +28,27 @@
         </header>
 
         <div id="tablero"></div>
-        <div id="game-status" class="status-hidden"></div>
-
+        
         <section class="records-container">
-            <h3><i class="fas fa-medal"></i> Mejores Récords</h3>
-            <table class="tabla-records">
-                <thead>
-                    <tr>
-                        <th>Puntos</th>
-                        <th>Tiempo</th>
-                        <th><i class="fas fa-banana"></i></th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-records"></tbody>
-            </table>
+            <button id="btn-toggle-records" class="gui-toggle-btn">
+                <i class="fas fa-medal"></i> Mejores Récords <i class="fas fa-chevron-down icon-arrow"></i>
+            </button>
+            <div id="records-content" class="instrucciones-content">
+                <table class="tabla-records">
+                    <thead>
+                        <tr>
+                            <th>Puntos</th>
+                            <th>Tiempo</th>
+                            <th>Bananas</th>
+                            <th>Rango</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-records"></tbody>
+                </table>
+                <div class="btn-borrar-container">
+                    <button id="btn-borrar-records"><i class="fas fa-trash-alt"></i> Restablecer Récords</button>
+                </div>
+            </div>
         </section>
         
         <section id="instrucciones-juego">
@@ -50,6 +56,26 @@
                 <i class="fas fa-book-open"></i> Guía del Explorador <i class="fas fa-chevron-down icon-arrow"></i>
             </button>
             <div id="instrucciones-content" class="instrucciones-content">
+                
+                <div class="instruccion-item">
+                    <p><strong><i class="fas fa-star"></i> Sistema de Rangos:</strong></p>
+                    <p>¡Supera desafíos mayores para obtener mejores medallas!</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="img/rango03.png" class="icono-rango" alt="Rango Épico">
+                            <span style="font-size: 0.8rem;"><strong>Épico:</strong> Gana con 45+ bananas, o con 30+ en 60 segundos o menos.</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="img/rango02.png" class="icono-rango" alt="Rango Avanzado">
+                            <span style="font-size: 0.8rem;"><strong>Avanzado:</strong> Gana con 25+ bananas, o en modo básico (15+) en 90 segundos o menos.</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="img/rango01.png" class="icono-rango" alt="Rango Básico">
+                            <span style="font-size: 0.8rem;"><strong>Explorador:</strong> Supera cualquier otro desafío estándar.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="instruccion-item">
                     <p><strong><i class="fas fa-sort-numeric-up"></i> El Secreto de los Números:</strong></p>
                     <p>Cada número indica exactamente cuántas bananas 🍌 hay ocultas en las 8 casillas vecinas (arriba, abajo, lados y diagonales). <br><br><em>Tip de Explorador: Si ves un "1" y solo hay una casilla sin revelar tocándolo, ¡esa casilla es una banana segura!</em></p>
@@ -90,7 +116,8 @@
     <audio id="sonido-explosion" src="audio/explosion.mp3"></audio>
     <audio id="sonido-revelar" src="audio/revelar.mp3"></audio>
     <audio id="sonido-victoria" src="audio/victoria.mp3"></audio>
-    <audio id="sonido-ambiente" src="audio/track.mp3" loop></audio> 
+    <audio id="sonido-ambiente" src="audio/track.mp3" loop></audio>
+    <audio id="sonido-risa" src="audio/risa.mp3"></audio>
 
     <footer>Copyright &copy; 2026 - <span>zhaider181</span></footer>
 
