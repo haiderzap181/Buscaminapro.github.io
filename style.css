@@ -1,148 +1,141 @@
 :root {
     --bg-main: #1a1a2e;
-    --board-bg: #16213e;
-    --cell-unrevealed: #0f3460;
-    --accent: #e94560;
-    --win: #4ecca3;
-    --text-light: #ffffff;
+    --board-bg: #0d140a;
+    --cell-unrevealed: #2d4c1e;
+    --accent: #f5c518;
 }
 
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
-    touch-action: manipulation; 
-    /* Bloqueo global de selección */
-    user-select: none;
-    -webkit-user-select: none;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    padding: 20px;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    color: var(--text-light);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    background-color: var(--bg-main);
+    padding: 20px; font-family: 'Nunito', sans-serif; color: white;
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh;
     background-image: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), url('img/24782.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background-size: cover; background-attachment: fixed;
 }
 
-header {
-    background: rgba(22, 33, 62, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
+.game-container { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 420px; }
+.logo-container { margin-bottom: 15px; }
+.game-logo { max-width: 140px; height: auto; }
+
+.controls-panel {
+    background: rgba(45, 64, 34, 0.95); padding: 20px; border-radius: 20px;
+    width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 15px;
 }
 
-.stats-panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 15px 0;
-    font-weight: bold;
+.stats-bar {
+    display: flex; justify-content: space-around; align-items: center;
+    margin-bottom: 15px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 12px;
 }
+
+.stat-item { display: flex; align-items: center; gap: 6px; font-weight: 900; font-size: 0.85rem; }
+.stat-item i { color: var(--accent); }
 
 #input-minas {
-    background: var(--bg-main);
-    color: var(--win);
-    border: 1px solid var(--cell-unrevealed);
-    border-radius: 4px;
-    width: 55px;
-    text-align: center;
-    padding: 4px;
+    background: white !important; color: black !important; border: none;
+    border-radius: 6px; width: 45px; height: 28px; text-align: center; 
+    font-weight: 900; font-family: 'Nunito', sans-serif; outline: none;
+}
+
+.info-rango-bananas {
+    text-align: center; font-size: 0.75rem; font-weight: 400; opacity: 0.7; margin-top: -5px; margin-bottom: 10px;
 }
 
 #btn-reiniciar {
-    width: 100%;
-    padding: 12px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    width: 100%; padding: 15px; background: linear-gradient(180deg, #f5c518 0%, #e2b300 100%);
+    color: #1a1a2e; border: none; border-radius: 12px; font-weight: 900;
+    text-transform: uppercase; cursor: pointer; box-shadow: 0 5px 0 #b38f00;
+    transition: filter 0.2s ease;
 }
+#btn-reiniciar:hover { filter: brightness(1.1); }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
-    background: var(--board-bg);
-    padding: 12px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 420px;
-    aspect-ratio: 1 / 1;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+@keyframes proClick {
+    0% { transform: scale(1); box-shadow: 0 5px 0 #b38f00; }
+    40% { transform: scale(0.95) translateY(3px); box-shadow: 0 2px 0 #b38f00; }
+    70% { transform: scale(1.02) translateY(-1px); box-shadow: 0 6px 0 #b38f00; }
+    100% { transform: scale(1); box-shadow: 0 5px 0 #b38f00; }
+}
+.animacion-moderna { animation: proClick 0.4s cubic-bezier(0.25, 1.5, 0.5, 1); }
+
+#tablero {
+    display: grid !important; grid-template-columns: repeat(10, 1fr) !important;
+    gap: 5px; background: var(--board-bg); padding: 15px; border-radius: 15px;
+    width: 100%; aspect-ratio: 1 / 1; margin-bottom: 15px;
 }
 
 .celda {
-    width: 100%;
-    aspect-ratio: 1/1;
-    background: var(--cell-unrevealed);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background 0.2s, transform 0.1s;
-    /* Protección total contra menús de sistema */
-    -webkit-touch-callout: none;
+    width: 100%; aspect-ratio: 1/1; background: var(--cell-unrevealed);
+    border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.3rem; transition: all 0.2s;
+}
+.celda:hover:not(.revelada) { background: #3e682a !important; transform: scale(1.05); }
+.revelada { background: #f5eeda !important; color: #1a1a2e !important; }
+
+.numero-1 { color: #2196f3 !important; }
+.numero-2 { color: #4caf50 !important; }
+.numero-3 { color: #f44336 !important; }
+
+.bomba-revelada {
+    background-color: #fceabb !important;
+    background-image: url('img/banana-mina.png') !important;
+    background-size: 80% 80% !important; background-repeat: no-repeat !important; background-position: center !important;
 }
 
-.celda:hover:not(.revelada) {
-    background: #1e5494;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.2);
+.records-container {
+    background: rgba(45, 64, 34, 0.9); width: 100%; padding: 20px;
+    border-radius: 20px; margin-bottom: 15px; text-align: center;
 }
+.tabla-records { width: 100%; border-collapse: collapse; font-size: 0.85rem; table-layout: fixed; }
+.tabla-records th { padding: 8px; border-bottom: 2px solid rgba(255,255,255,0.1); font-weight: 900; }
+.tabla-records td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-.revelada {
-    background: #e0e0e0 !important;
-    color: #1a1a2e !important;
-    border: 1px solid #bdc3c7 !important;
+#instrucciones-juego { background: rgba(45, 64, 34, 0.85); border-radius: 20px; width: 100%; overflow: hidden; }
+.gui-toggle-btn {
+    width: 100%; background: none; border: none; padding: 18px; color: var(--accent);
+    font-size: 0.95rem; font-weight: 900; text-transform: uppercase; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; gap: 12px; font-family: 'Nunito', sans-serif;
 }
+.instrucciones-content { text-align: left; max-height: 0; overflow: hidden; transition: max-height 0.5s ease; padding: 0 25px; }
+.instrucciones-content.active { max-height: 800px; padding-bottom: 25px; }
+.instruccion-item { margin-bottom: 15px; font-size: 0.88rem; line-height: 1.5; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
+.guia-colores { margin-top: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; display: flex; justify-content: center; gap: 20px; font-weight: 900; }
 
-.numero-1 { color: #45b6fe !important; }
-.numero-2 { color: #4ecca3 !important; }
-.numero-3 { color: #e94560 !important; }
+footer { margin-top: 30px; opacity: 0.6; font-size: 0.85rem; text-align: center; width: 100%; }
 
-#game-status {
-    width: 100%;
-    max-width: 420px;
-    margin: 20px 0;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
+.modal-oculto {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(90, 0, 0, 0.75);
+    z-index: 1000; justify-content: center; align-items: center;
+    backdrop-filter: blur(4px);
 }
+.modal-oculto.mostrar { display: flex; animation: fadeInModal 0.3s ease; }
+#modal-victoria { background: rgba(15, 65, 15, 0.75); }
 
-.status-hidden { display: none !important; }
-.status-lost { display: block; background: var(--accent); box-shadow: 0 0 20px var(--accent); }
-.status-won { display: block; background: var(--win); box-shadow: 0 0 20px var(--win); }
-
-#instrucciones-juego {
-    background: rgba(22, 33, 62, 0.8);
-    padding: 25px;
-    border-radius: 15px;
-    max-width: 420px;
-    width: 100%;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 30px;
+.modal-contenido {
+    background: rgba(45, 64, 34, 0.95); padding: 30px; border-radius: 20px;
+    text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 2px solid var(--accent);
+    animation: zoomInPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 320px; width: 90%;
 }
+.modal-contenido h2 { color: #ff4d4d; margin-bottom: 10px; font-weight: 900; font-size: 1.6rem;}
 
-footer { margin-top: auto; padding: 20px; opacity: 0.8; font-size: 0.85rem; }
-footer span { color: var(--accent); font-weight: bold; }
+.img-derrota { max-width: 140px; margin-bottom: 15px; border-radius: 10px; }
+.modal-contenido p { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: white; }
+.modal-contenido span { color: var(--accent); font-weight: 900; font-size: 1.5rem; }
+
+#btn-reintentar-modal, #btn-jugar-victoria {
+    width: 100%; padding: 15px; background: linear-gradient(180deg, #f5c518 0%, #e2b300 100%);
+    color: #1a1a2e; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase;
+    cursor: pointer; box-shadow: 0 5px 0 #b38f00; font-family: 'Nunito', sans-serif;
+}
+#btn-reintentar-modal:hover, #btn-jugar-victoria:hover { filter: brightness(1.1); }
+
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomInPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* --- BOTÓN DE MUTEAR --- */
+#btn-mutear {
+    cursor: pointer; font-size: 1.1rem; transition: all 0.2s ease;
+}
+#btn-mutear:hover {
+    transform: scale(1.2); filter: brightness(1.2);
+}
