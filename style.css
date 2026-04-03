@@ -92,7 +92,6 @@ body {
     background-size: 80% 80% !important; background-repeat: no-repeat !important; background-position: center !important;
 }
 
-/* --- TABLA DE RÉCORDS (ORGANIZADA Y DIVIDIDA) --- */
 .records-container {
     background: rgba(45, 64, 34, 0.9); width: 100%; padding: 0; 
     border-radius: 20px; margin-bottom: 15px; text-align: center; overflow: hidden;
@@ -109,7 +108,6 @@ body {
 }
 .tabla-records td:last-child { border-right: none; }
 
-/* BOTÓN DE BORRAR RÉCORDS */
 .btn-borrar-container { padding: 15px; text-align: center; }
 #btn-borrar-records {
     background: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d;
@@ -165,3 +163,13 @@ footer { margin-top: 30px; opacity: 0.6; font-size: 0.85rem; text-align: center;
 #btn-mutear:hover { transform: scale(1.2); filter: brightness(1.2); }
 
 .icono-rango { width: 35px; height: 35px; object-fit: contain; border-radius: 5px; }
+
+/* --- NUEVO: Ajuste de proporciones SOLO para evitar que desborde en celulares --- */
+@media (max-width: 480px) {
+    #tablero {
+        gap: 2px !important; 
+    }
+    .celda {
+        font-size: 0.95rem !important;
+    }
+}
