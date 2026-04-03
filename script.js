@@ -3,177 +3,199 @@ const puntosElemento = document.getElementById('puntos');
 const statusElemento = document.getElementById('game-status');
 const inputMinas = document.getElementById('input-minas');
 const timerElemento = document.getElementById('timer');
+const listaRecordsElemento = document.getElementById('lista-records');
 
 const sonidoExplosion = document.getElementById('sonido-explosion');
 const sonidoRevelar = document.getElementById('sonido-revelar');
 const sonidoVictoria = document.getElementById('sonido-victoria');
+const sonidoAmbiente = document.getElementById('sonido-ambiente');
 
-let filas = 10, columnas = 10, numeroDeMinas = 15;
-let juegoTerminado = false, celdasPorRevelar, puntaje = 0;
-let ultimoSonidoTime = 0;
-let tiempo = 0, intervaloTiempo, primerClic = true;
+let mapaReal = [], celdasCache = [], juegoTerminado = false;
+let tiempo = 0, intervaloTiempo, primerClic = true, puntaje = 0, celdasPorRevelar;
 
-// SEGURIDAD: Datos fuera del alcance del Inspector HTML
-let mapaReal = []; 
-let celdasCache = [];
+// Nueva variable global para controlar si el jugador muteó el juego
+let musicaMutada = false;
+
+function cargarRecords() {
+    const records = JSON.parse(localStorage.getItem('monkey_records')) || [];
+    listaRecordsElemento.innerHTML = '';
+    if (records.length === 0) { listaRecordsElemento.innerHTML = '<tr><td colspan="4" style="padding:20px; opacity:0.6">Sin récords aún</td></tr>'; return; }
+    records.sort((a, b) => b.puntaje - a.puntaje);
+    records.slice(0, 5).forEach(rec => {
+        listaRecordsElemento.innerHTML += `<tr><td>${rec.puntaje}</td><td>${rec.tiempo}s</td><td>${rec.bananas}</td><td>${rec.fecha}</td></tr>`;
+    });
+}
+
+function guardarRecord() {
+    const records = JSON.parse(localStorage.getItem('monkey_records')) || [];
+    records.push({ puntaje, tiempo, bananas: parseInt(inputMinas.value), fecha: new Date().toLocaleDateString() });
+    localStorage.setItem('monkey_records', JSON.stringify(records));
+    cargarRecords();
+}
 
 function crearTablero() {
-    let cant = parseInt(inputMinas.value) || 15;
-    cant = Math.min(Math.max(cant, 15), 99);
-    inputMinas.value = cant;
-    numeroDeMinas = cant;
-
-    tableroElemento.innerHTML = '';
-    celdasCache = [];
-    juegoTerminado = false;
-    puntaje = 0;
-    puntosElemento.innerText = puntaje;
-    
-    detenerTiempo();
-    tiempo = 0;
-    timerElemento.innerText = tiempo;
-    primerClic = true;
-
+    cargarRecords();
+    document.getElementById('modal-derrota').classList.remove('mostrar');
+    document.getElementById('modal-victoria').classList.remove('mostrar'); 
     statusElemento.className = 'status-hidden';
-    celdasPorRevelar = (filas * columnas) - numeroDeMinas;
+    let numMinas = parseInt(inputMinas.value) || 15;
+    tableroElemento.innerHTML = '';
+    celdasCache = []; juegoTerminado = false; primerClic = true;
+    puntaje = 0; puntosElemento.innerText = '0';
+    clearInterval(intervaloTiempo); tiempo = 0; timerElemento.innerText = '0';
+    celdasPorRevelar = 100 - numMinas;
+    mapaReal = [...Array(numMinas).fill('mina'), ...Array(100 - numMinas).fill('vacio')].sort(() => Math.random() - 0.5);
 
-    // Generamos el mapa en memoria privada
-    mapaReal = generarDatos(); 
+    if(sonidoAmbiente) {
+        sonidoAmbiente.pause();
+        sonidoAmbiente.currentTime = 0;
+    }
 
-    for (let i = 0; i < filas * columnas; i++) {
+    for (let i = 0; i < 100; i++) {
         const celda = document.createElement('div');
         celda.classList.add('celda');
-        celda.dataset.id = i; // Solo el ID es visible
-
+        celda.dataset.id = i;
         celda.addEventListener('click', () => {
-            if (primerClic && !juegoTerminado) {
-                iniciarTiempo();
-                primerClic = false;
+            if (primerClic && !juegoTerminado) { 
+                intervaloTiempo = setInterval(() => { tiempo++; timerElemento.innerText = tiempo; }, 1000);
+                
+                // Si el jugador no lo ha mutado, arranca la música
+                if(sonidoAmbiente && !musicaMutada) { 
+                    sonidoAmbiente.volume = 0.3; 
+                    sonidoAmbiente.play().catch(()=>{}); 
+                }
+                primerClic = false; 
             }
             revelarCelda(celda);
         });
-
         celda.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            if (celda.classList.contains('revelada') || juegoTerminado) return;
-            if (navigator.vibrate) navigator.vibrate(30); 
-            celda.innerText = (celda.innerText === '') ? '🚩' : (celda.innerText === '🚩' ? '?' : '');
+            if (juegoTerminado || celda.classList.contains('revelada')) return;
+            if (celda.innerHTML === '') {
+                celda.innerHTML = '<i class="fas fa-flag"></i>';
+            } else if (celda.querySelector('.fa-flag')) {
+                celda.innerHTML = '<i class="fas fa-question" style="color:white"></i>';
+            } else {
+                celda.innerHTML = '';
+            }
         });
-
         tableroElemento.appendChild(celda);
         celdasCache.push(celda);
     }
 }
 
-function iniciarTiempo() {
-    intervaloTiempo = setInterval(() => {
-        tiempo++;
-        timerElemento.innerText = tiempo;
-    }, 1000);
-}
-
-function detenerTiempo() {
-    clearInterval(intervaloTiempo);
-}
-
-function generarDatos() {
-    const m = Array(numeroDeMinas).fill('mina'), v = Array(100 - numeroDeMinas).fill('vacio');
-    return v.concat(m).sort(() => Math.random() - 0.5);
-}
-
 function revelarCelda(celda) {
-    if (!celda || celda.classList.contains('revelada') || juegoTerminado || celda.innerText === '🚩') return;
-    
+    if (!celda || celda.classList.contains('revelada') || juegoTerminado || celda.innerHTML !== '') return;
     const id = parseInt(celda.dataset.id);
-    const tipoReal = mapaReal[id]; // Consultamos la variable segura
-
-    if (tipoReal === 'mina') {
-        detenerTiempo();
-        sonidoExplosion.play().catch(()=>{});
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-
-        celda.classList.add('revelada');
-        celda.innerText = '💣';
-        juegoTerminado = true;
-        statusElemento.innerText = '💥 ¡GAME OVER! 💥';
-        statusElemento.className = 'status-lost';
-        revelarTodas();
+    if (mapaReal[id] === 'mina') {
+        clearInterval(intervaloTiempo); juegoTerminado = true;
+        
+        if(sonidoAmbiente) sonidoAmbiente.pause(); 
+        
+        if(sonidoExplosion) { sonidoExplosion.volume = 0.4; sonidoExplosion.play().catch(()=>{}); }
+        celdasCache.forEach((c, idx) => { if(mapaReal[idx] === 'mina') { c.innerHTML = ''; c.classList.add('revelada', 'bomba-revelada'); } });
+        
+        setTimeout(() => {
+            document.getElementById('puntuacion-final').innerText = puntaje;
+            document.getElementById('modal-derrota').classList.add('mostrar');
+        }, 600);
+        
     } else {
-        const ahora = Date.now();
-        if (ahora - ultimoSonidoTime > 80) {
-            sonidoRevelar.currentTime = 0;
-            sonidoRevelar.play().catch(()=>{});
-            ultimoSonidoTime = ahora;
-        }
-
-        celda.classList.add('revelada');
-        puntaje += 100;
-        puntosElemento.innerText = puntaje;
-        celdasPorRevelar--;
-
-        const total = contarVecinos(id);
-        if (total > 0) {
-            celda.innerText = total;
-            celda.classList.add('numero-' + total);
-        } else {
-            if (navigator.vibrate) navigator.vibrate(15); 
-            expandir(id);
-        }
-
-        if (celdasPorRevelar === 0 && !juegoTerminado) {
-            detenerTiempo();
-            juegoTerminado = true;
-            sonidoVictoria.play().catch(()=>{});
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
-            statusElemento.innerText = `🏆 ¡VICTORIA EN ${tiempo}s! 🏆`;
-            statusElemento.className = 'status-won';
+        if(sonidoRevelar) { sonidoRevelar.volume = 0.2; sonidoRevelar.play().catch(()=>{}); }
+        celda.classList.add('revelada'); celdasPorRevelar--;
+        puntaje += 100; puntosElemento.innerText = puntaje;
+        const m = contarVecinos(id);
+        if (m > 0) { celda.innerText = m; celda.classList.add('numero-' + m); }
+        else { expandir(id); }
+        
+        if (celdasPorRevelar === 0) {
+            clearInterval(intervaloTiempo); juegoTerminado = true;
+            
+            if(sonidoAmbiente) sonidoAmbiente.pause(); 
+            
+            if(sonidoVictoria) { sonidoVictoria.play().catch(()=>{}); }
+            statusElemento.innerText = '🏆 ¡HAS GANADO! 🏆'; statusElemento.className = 'status-won';
+            guardarRecord();
+            
+            setTimeout(() => {
+                document.getElementById('puntuacion-final-victoria').innerText = puntaje;
+                document.getElementById('modal-victoria').classList.add('mostrar');
+            }, 600);
         }
     }
 }
 
 function contarVecinos(id) {
-    let m = 0;
-    const f = Math.floor(id/10), c = id%10;
+    let m = 0; const f = Math.floor(id/10), c = id%10;
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
-        if(nf>=0 && nf<10 && nc>=0 && nc<10) {
-            if(mapaReal[nf*10+nc] === 'mina') m++;
-        }
+        if(nf>=0 && nf<10 && nc>=0 && nc<10 && mapaReal[nf*10+nc] === 'mina') m++;
     }
     return m;
 }
 
 function expandir(id) {
     const f = Math.floor(id/10), c = id%10;
-    let delay = 0;
     for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) {
         const nf=f+i, nc=c+j;
         if(nf>=0 && nf<10 && nc>=0 && nc<10) {
-            const vecino = celdasCache[nf*10+nc];
-            if (!vecino.classList.contains('revelada')) {
-                setTimeout(() => revelarCelda(vecino), delay);
-                delay += 50; 
-            }
+            const v = celdasCache[nf*10+nc];
+            if (!v.classList.contains('revelada')) { setTimeout(() => revelarCelda(v), 30); }
         }
     }
 }
 
-function revelarTodas() {
-    celdasCache.forEach((c, index) => {
-        if(mapaReal[index] === 'mina') {
-            c.classList.add('revelada');
-            c.innerText = '💣';
+document.getElementById('btn-reiniciar').addEventListener('click', function() {
+    this.classList.add('animacion-moderna');
+    crearTablero();
+    setTimeout(() => { this.classList.remove('animacion-moderna'); }, 400);
+});
+
+document.getElementById('btn-reintentar-modal').addEventListener('click', function() {
+    this.classList.add('animacion-moderna');
+    setTimeout(() => { 
+        this.classList.remove('animacion-moderna'); 
+        crearTablero();
+    }, 400);
+});
+
+document.getElementById('btn-jugar-victoria').addEventListener('click', function() {
+    this.classList.add('animacion-moderna');
+    setTimeout(() => { 
+        this.classList.remove('animacion-moderna'); 
+        crearTablero();
+    }, 400);
+});
+
+document.getElementById('btn-toggle-gui').addEventListener('click', () => {
+    document.getElementById('instrucciones-content').classList.toggle('active');
+});
+
+// --- LÓGICA DEL BOTÓN DE MUTEAR ---
+const btnMutear = document.getElementById('btn-mutear');
+btnMutear.addEventListener('click', () => {
+    musicaMutada = !musicaMutada; // Alternar estado
+    
+    if(sonidoAmbiente) {
+        sonidoAmbiente.muted = musicaMutada; // Mutea el elemento de audio directamente
+    }
+    
+    if (musicaMutada) {
+        // Estado Apagado
+        btnMutear.classList.remove('fa-volume-up');
+        btnMutear.classList.add('fa-volume-mute');
+        btnMutear.style.color = '#ff4d4d'; // Rojo
+    } else {
+        // Estado Prendido
+        btnMutear.classList.remove('fa-volume-mute');
+        btnMutear.classList.add('fa-volume-up');
+        btnMutear.style.color = 'var(--accent)'; // Vuelve a amarillo
+        
+        // Si el juego está corriendo y no está pausado por perder/ganar, forzamos play si estaba mudo
+        if (!primerClic && !juegoTerminado && sonidoAmbiente.paused) {
+            sonidoAmbiente.play().catch(()=>{});
         }
-    });
-}
+    }
+});
 
-// --- BLOQUEO DE INSPECTOR Y ATAJOS ---
-document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // Bloquear F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-};
-
-document.getElementById('btn-reiniciar').addEventListener('click', crearTablero);
 window.onload = crearTablero;
