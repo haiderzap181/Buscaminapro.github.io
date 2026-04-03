@@ -12,8 +12,6 @@ const sonidoAmbiente = document.getElementById('sonido-ambiente');
 
 let mapaReal = [], celdasCache = [], juegoTerminado = false;
 let tiempo = 0, intervaloTiempo, primerClic = true, puntaje = 0, celdasPorRevelar;
-
-// Nueva variable global para controlar si el jugador muteó el juego
 let musicaMutada = false;
 
 function cargarRecords() {
