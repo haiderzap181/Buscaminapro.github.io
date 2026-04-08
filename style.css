@@ -18,7 +18,7 @@ body {
 .logo-container { margin-bottom: 15px; }
 .game-logo { max-width: 140px; height: auto; }
 
-.controls-panel { 
+.controls-panel {
     background: rgba(45, 64, 34, 0.95); padding: 20px; border-radius: 20px;
     width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 15px;
 }
@@ -41,6 +41,13 @@ body {
     text-align: center; font-size: 0.75rem; font-weight: 400; opacity: 0.7; margin-top: -5px; margin-bottom: 10px;
 }
 
+.input-dificultad {
+    background: rgba(0, 0, 0, 0.3); color: white; border: 1px solid var(--accent);
+    border-radius: 5px; padding: 2px 5px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; outline: none; cursor: pointer; margin-right: 5px;
+}
+.input-dificultad option { background: var(--bg-main); color: white; }
+
 #btn-reiniciar {
     width: 100%; padding: 15px; background: linear-gradient(180deg, #f5c518 0%, #e2b300 100%);
     color: #1a1a2e; border: none; border-radius: 12px; font-weight: 900;
@@ -58,7 +65,7 @@ body {
 .animacion-moderna { animation: proClick 0.4s cubic-bezier(0.25, 1.5, 0.5, 1); }
 
 #tablero {
-    display: grid !important; grid-template-columns: repeat(10, 1fr) !important;
+    display: grid !important; 
     gap: 5px; 
     background: url('img/tablero.png') center/100% 100% no-repeat !important; 
     padding: 11%; 
@@ -80,7 +87,17 @@ body {
     touch-action: none;
 }
 .celda:hover:not(.revelada) { background: #3e682a !important; transform: scale(1.05); }
-.revelada { background: rgba(245, 238, 218, 0.8) !important; color: #1a1a2e !important; }
+
+@keyframes popReveal {
+    0% { transform: scale(0.5); opacity: 0.5; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.revelada { 
+    background: rgba(245, 238, 218, 0.8) !important; 
+    color: #1a1a2e !important; 
+    animation: popReveal 0.3s cubic-bezier(0.25, 1.5, 0.5, 1); 
+}
 
 .numero-1 { color: #2196f3 !important; }
 .numero-2 { color: #4caf50 !important; }
@@ -122,8 +139,29 @@ body {
     font-size: 0.95rem; font-weight: 900; text-transform: uppercase; cursor: pointer;
     display: flex; justify-content: center; align-items: center; gap: 12px; font-family: 'Nunito', sans-serif;
 }
-.instrucciones-content { text-align: left; max-height: 0; overflow: hidden; transition: max-height 0.5s ease; padding: 0 25px; }
-.instrucciones-content.active { max-height: 800px; padding-bottom: 25px; }
+
+/* --- ACTUALIZADO: Scroll interno para la guía y récords --- */
+.instrucciones-content { 
+    text-align: left; max-height: 0; overflow: hidden; transition: max-height 0.5s ease; padding: 0 25px; 
+}
+.instrucciones-content.active { 
+    max-height: 350px; overflow-y: auto; padding-bottom: 25px; 
+}
+
+/* Estilos de la barra de scroll (Scrollbar) para que combine con el juego */
+.instrucciones-content::-webkit-scrollbar {
+    width: 6px;
+}
+.instrucciones-content::-webkit-scrollbar-thumb {
+    background: var(--accent); 
+    border-radius: 4px;
+}
+.instrucciones-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); 
+    border-radius: 4px;
+}
+/* -------------------------------------------------------- */
+
 .instruccion-item { margin-bottom: 15px; font-size: 0.88rem; line-height: 1.5; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
 .guia-colores { margin-top: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; display: flex; justify-content: center; gap: 20px; font-weight: 900; }
 
@@ -164,12 +202,18 @@ footer { margin-top: 30px; opacity: 0.6; font-size: 0.85rem; text-align: center;
 
 .icono-rango { width: 35px; height: 35px; object-fit: contain; border-radius: 5px; }
 
-/* --- NUEVO: Ajuste de proporciones SOLO para evitar que desborde en celulares --- */
+/* Ajuste de proporciones SOLO para celulares */
 @media (max-width: 480px) {
-    #tablero {
-        gap: 2px !important; 
-    }
-    .celda {
-        font-size: 0.95rem !important;
-    }
+    #tablero { gap: 2px !important; }
+    .celda { font-size: 0.95rem !important; }
+}
+
+/* Animación para el temblor de pantalla (Screen Shake) */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+.shake-screen {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
