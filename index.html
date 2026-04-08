@@ -23,7 +23,16 @@
                 <div class="stat-item"><i class="fas fa-trophy"></i> <span id="puntos">0</span></div>
                 <div class="stat-item"><i id="btn-mutear" class="fas fa-volume-up" title="Música Ambiente"></i></div>
             </div>
-            <p class="info-rango-bananas">Elige entre 15 y 99 bananas antes de reiniciar</p>
+            
+            <p class="info-rango-bananas">
+                Tablero: 
+                <select id="select-dificultad" class="input-dificultad">
+                    <option value="8">Mono Aprendiz (8x8)</option>
+                    <option value="10" selected>Gorila Plateado (10x10)</option>
+                </select>
+                | <span id="texto-limites">Límites: 15 a 99 bananas</span>
+            </p>
+            
             <button id="btn-reiniciar">REINICIAR PARTIDA</button>
         </header>
 
@@ -50,6 +59,59 @@
                 </div>
             </div>
         </section>
+
+        <section class="records-container">
+            <button id="btn-toggle-logros" class="gui-toggle-btn">
+                <i class="fas fa-award"></i> Logros y Medallas <i class="fas fa-chevron-down icon-arrow"></i>
+            </button>
+            <div id="logros-content" class="instrucciones-content">
+                <div class="instruccion-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i id="icono-primer-paso" class="fas fa-leaf" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
+                        <div>
+                            <p><strong>Primeros Pasos</strong></p>
+                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana tu primera partida en el tablero Mono Aprendiz.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="instruccion-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i id="icono-aprendiz-veloz" class="fas fa-running" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
+                        <div>
+                            <p><strong>Aprendiz Veloz</strong></p>
+                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana en Mono Aprendiz en menos de 30 segundos.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="instruccion-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i id="icono-velocista" class="fas fa-bolt" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
+                        <div>
+                            <p><strong>Velocista Plateado</strong></p>
+                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida en Gorila Plateado en menos de 40 segundos.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="instruccion-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i id="icono-purista" class="fas fa-flag-checkered" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
+                        <div>
+                            <p><strong>Purista Extremo</strong></p>
+                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida sin colocar ni una sola bandera (clic derecho).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="instruccion-item">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i id="icono-locura" class="fas fa-skull-crossbones" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
+                        <div>
+                            <p><strong>Locura Tropical</strong></p>
+                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida en Gorila Plateado con más de 50 bananas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
         
         <section id="instrucciones-juego">
             <button id="btn-toggle-gui" class="gui-toggle-btn">
@@ -59,21 +121,30 @@
                 
                 <div class="instruccion-item">
                     <p><strong><i class="fas fa-star"></i> Sistema de Rangos:</strong></p>
-                    <p>¡Supera desafíos mayores para obtener mejores medallas!</p>
+                    <p>¡Los rangos ahora se adaptan a la dificultad del tablero!</p>
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <img src="img/rango03.png" class="icono-rango" alt="Rango Épico">
-                            <span style="font-size: 0.8rem;"><strong>Épico:</strong> Gana con 45+ bananas, o con 30+ en 60 segundos o menos.</span>
+                            <span style="font-size: 0.8rem;"><strong>Épico:</strong> <br>Gorila (10x10): 30+ bananas o 20+ en &le; 60s.<br>Aprendiz (8x8): 25+ bananas o 15+ en &le; 40s.</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <img src="img/rango02.png" class="icono-rango" alt="Rango Avanzado">
-                            <span style="font-size: 0.8rem;"><strong>Avanzado:</strong> Gana con 25+ bananas, o en modo básico (15+) en 90 segundos o menos.</span>
+                            <span style="font-size: 0.8rem;"><strong>Avanzado:</strong> <br>Gorila (10x10): 20+ bananas o 15+ en &le; 90s.<br>Aprendiz (8x8): 15+ bananas o 10+ en &le; 60s.</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <img src="img/rango01.png" class="icono-rango" alt="Rango Básico">
-                            <span style="font-size: 0.8rem;"><strong>Explorador:</strong> Supera cualquier otro desafío estándar.</span>
+                            <span style="font-size: 0.8rem;"><strong>Explorador:</strong> Supera cualquier otro desafío estándar en tu tablero.</span>
                         </div>
                     </div>
+                </div>
+
+                <div class="instruccion-item">
+                    <p><strong><i class="fas fa-sliders-h"></i> Límites de Dificultad:</strong></p>
+                    <p>Puedes personalizar la cantidad de bananas, pero cada tablero tiene sus límites para mantener el reto:</p>
+                    <ul style="margin-left: 25px; margin-top: 8px; font-size: 0.8rem; line-height: 1.6;">
+                        <li><strong>Mono Aprendiz (8x8):</strong> De 10 a 63 bananas.</li>
+                        <li><strong>Gorila Plateado (10x10):</strong> De 15 a 99 bananas.</li>
+                    </ul>
                 </div>
 
                 <div class="instruccion-item">
@@ -126,6 +197,7 @@
 
     <footer>Copyright &copy; 2026 - <span>zhaider181</span></footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
