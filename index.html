@@ -18,14 +18,14 @@
 
         <header class="controls-panel">
             <div class="stats-bar">
-                <div class="stat-item"><i class="fas fa-banana"></i> <span>Bananas:</span> <input type="number" id="input-minas" value="15" min="15" max="99"></div>
+                <div class="stat-item"><i class="fas fa-banana"></i> <span id="txt-bananas">Bananas:</span> <input type="number" id="input-minas" value="15" min="15" max="99"></div>
                 <div class="stat-item"><i class="fas fa-stopwatch"></i> <span id="timer">0</span>s</div>
                 <div class="stat-item"><i class="fas fa-trophy"></i> <span id="puntos">0</span></div>
-                <div class="stat-item"><i id="btn-mutear" class="fas fa-volume-up" title="Música Ambiente"></i></div>
+                <div class="stat-item"><img src="img/btnconfi.png" id="btn-config" alt="Configuración" title="Configuración"></div>
             </div>
             
             <p class="info-rango-bananas">
-                Tablero: 
+                <span id="txt-tablero">Tablero:</span> 
                 <select id="select-dificultad" class="input-dificultad">
                     <option value="8">Mono Aprendiz (8x8)</option>
                     <option value="10" selected>Gorila Plateado (10x10)</option>
@@ -46,10 +46,10 @@
                 <table class="tabla-records">
                     <thead>
                         <tr>
-                            <th>Puntos</th>
-                            <th>Tiempo</th>
-                            <th>Bananas</th>
-                            <th>Rango</th>
+                            <th id="th-puntos">Puntos</th>
+                            <th id="th-tiempo">Tiempo</th>
+                            <th id="th-bananas">Bananas</th>
+                            <th id="th-rango">Rango</th>
                         </tr>
                     </thead>
                     <tbody id="lista-records"></tbody>
@@ -65,52 +65,7 @@
                 <i class="fas fa-award"></i> Logros y Medallas <i class="fas fa-chevron-down icon-arrow"></i>
             </button>
             <div id="logros-content" class="instrucciones-content">
-                <div class="instruccion-item">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i id="icono-primer-paso" class="fas fa-leaf" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
-                        <div>
-                            <p><strong>Primeros Pasos</strong></p>
-                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana tu primera partida en el tablero Mono Aprendiz.</p>
-                        </div>
-                    </div>
                 </div>
-                <div class="instruccion-item">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i id="icono-aprendiz-veloz" class="fas fa-running" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
-                        <div>
-                            <p><strong>Aprendiz Veloz</strong></p>
-                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana en Mono Aprendiz en menos de 30 segundos.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="instruccion-item">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i id="icono-velocista" class="fas fa-bolt" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
-                        <div>
-                            <p><strong>Velocista Plateado</strong></p>
-                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida en Gorila Plateado en menos de 40 segundos.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="instruccion-item">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i id="icono-purista" class="fas fa-flag-checkered" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
-                        <div>
-                            <p><strong>Purista Extremo</strong></p>
-                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida sin colocar ni una sola bandera (clic derecho).</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="instruccion-item">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <i id="icono-locura" class="fas fa-skull-crossbones" style="font-size: 1.5rem; color: #a0a0a0; transition: color 0.5s;"></i>
-                        <div>
-                            <p><strong>Locura Tropical</strong></p>
-                            <p style="font-size: 0.8rem; opacity: 0.8;">Gana una partida en Gorila Plateado con más de 50 bananas.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
         
         <section id="instrucciones-juego">
@@ -118,63 +73,49 @@
                 <i class="fas fa-book-open"></i> Guía del Explorador <i class="fas fa-chevron-down icon-arrow"></i>
             </button>
             <div id="instrucciones-content" class="instrucciones-content">
-                
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-star"></i> Sistema de Rangos:</strong></p>
-                    <p>¡Los rangos ahora se adaptan a la dificultad del tablero!</p>
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="img/rango03.png" class="icono-rango" alt="Rango Épico">
-                            <span style="font-size: 0.8rem;"><strong>Épico:</strong> <br>Gorila (10x10): 30+ bananas o 20+ en &le; 60s.<br>Aprendiz (8x8): 25+ bananas o 15+ en &le; 40s.</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="img/rango02.png" class="icono-rango" alt="Rango Avanzado">
-                            <span style="font-size: 0.8rem;"><strong>Avanzado:</strong> <br>Gorila (10x10): 20+ bananas o 15+ en &le; 90s.<br>Aprendiz (8x8): 15+ bananas o 10+ en &le; 60s.</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="img/rango01.png" class="icono-rango" alt="Rango Básico">
-                            <span style="font-size: 0.8rem;"><strong>Explorador:</strong> Supera cualquier otro desafío estándar en tu tablero.</span>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-sliders-h"></i> Límites de Dificultad:</strong></p>
-                    <p>Puedes personalizar la cantidad de bananas, pero cada tablero tiene sus límites para mantener el reto:</p>
-                    <ul style="margin-left: 25px; margin-top: 8px; font-size: 0.8rem; line-height: 1.6;">
-                        <li><strong>Mono Aprendiz (8x8):</strong> De 10 a 63 bananas.</li>
-                        <li><strong>Gorila Plateado (10x10):</strong> De 15 a 99 bananas.</li>
-                    </ul>
-                </div>
-
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-sort-numeric-up"></i> El Secreto de los Números:</strong></p>
-                    <p>Cada número indica exactamente cuántas bananas 🍌 hay ocultas en las 8 casillas vecinas (arriba, abajo, lados y diagonales). <br><br><em>Tip de Explorador: Si ves un "1" y solo hay una casilla sin revelar tocándolo, ¡esa casilla es una banana segura!</em></p>
-                    <div class="guia-colores">
-                        <span class="numero-1">1</span> | <span class="numero-2">2</span> | <span class="numero-3">3</span>
-                    </div>
-                </div>
-
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-mobile-alt"></i> ¿Juegas en celular?</strong> En lugar de hacer clic derecho, <strong>mantén presionada</strong> la casilla durante un segundo para colocar las banderas o los signos de interrogación.</p>
-                </div>
-
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-flag"></i> Clic Derecho (x1):</strong> Coloca una bandera 🚩 en las casillas donde estés 100% seguro de que hay una banana. Esto te ayuda a no pisarla por accidente.</p>
-                </div>
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-question-circle"></i> Clic Derecho (x2):</strong> Coloca un signo de interrogación ❓ si sospechas que hay una banana, pero prefieres investigar un poco más antes de decidir.</p>
-                </div>
-                <div class="instruccion-item">
-                    <p><strong><i class="fas fa-eraser"></i> Clic Derecho (x3):</strong> Limpia la casilla y quita cualquier marca si te diste cuenta de que cometiste un error de cálculo.</p>
-                </div>
-            </div>
         </section>
+
+        <div id="modal-config" class="modal-oculto">
+            <div class="modal-contenido" style="padding: 20px 15px;">
+                <i class="fas fa-times" id="btn-cerrar-x" title="Cerrar"></i>
+                
+                <h2 id="titulo-opciones" style="color: var(--accent); margin-bottom: 15px;">Opciones</h2>
+                
+                <div class="config-scroll-area">
+                    
+                    <div class="config-section">
+                        <h3 id="txt-idioma-btn" style="font-size: 1rem; color: var(--accent); margin-bottom: 5px;"><i class="fas fa-globe"></i> Idioma / Language</h3>
+                        <p id="txt-desc-idioma" style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px;">Selecciona el idioma del juego.</p>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="btn-es" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid var(--accent); background: var(--accent); color: var(--bg-main); font-weight: bold; cursor: pointer; font-family: 'Nunito', sans-serif;">Español</button>
+                            <button id="btn-en" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid var(--accent); background: transparent; color: white; font-weight: bold; cursor: pointer; font-family: 'Nunito', sans-serif;">English</button>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h3 id="txt-sonidos-btn" style="font-size: 1rem; color: var(--accent); margin-bottom: 5px;"><i class="fas fa-music"></i> Sonidos</h3>
+                        <p id="txt-desc-sonidos" style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px;">Ajusta el volumen a tu gusto.</p>
+                        <div class="slider-container" style="margin-top: 0;">
+                            <label id="lbl-musica" for="slider-musica"><i class="fas fa-headphones"></i> Música General</label>
+                            <input type="range" id="slider-musica" min="0" max="1" step="0.01" value="0.3">
+                        </div>
+                        <div class="slider-container" style="margin-bottom: 0;">
+                            <label id="lbl-efectos" for="slider-efectos"><i class="fas fa-volume-up"></i> Efectos Especiales</label>
+                            <input type="range" id="slider-efectos" min="0" max="1" step="0.01" value="1">
+                        </div>
+                    </div>
+
+                    </div>
+
+                <button id="btn-cerrar-config" style="margin-top: 10px;">GUARDAR Y CERRAR</button>
+            </div>
+        </div>
 
         <div id="modal-derrota" class="modal-oculto">
             <div class="modal-contenido">
                 <img src="img/perdiste.png" alt="Mono Burlón" class="img-derrota">
-                <p>Puntuación: <span id="puntuacion-final">0</span></p>
+                <p><span id="txt-puntuacion-derrota">Puntuación:</span> <span id="puntuacion-final">0</span></p>
                 <button id="btn-reintentar-modal">VOLVER A INTENTAR</button>
             </div>
         </div>
@@ -182,7 +123,7 @@
         <div id="modal-victoria" class="modal-oculto" id-fondo="victoria">
             <div class="modal-contenido">
                 <img src="img/ganaste.png" alt="Mono Furioso" class="img-derrota">
-                <p>Puntuación: <span id="puntuacion-final-victoria">0</span></p>
+                <p><span id="txt-puntuacion-victoria">Puntuación:</span> <span id="puntuacion-final-victoria">0</span></p>
                 <button id="btn-jugar-victoria">JUGAR DE NUEVO</button>
             </div>
         </div>
@@ -198,6 +139,7 @@
     <footer>Copyright &copy; 2026 - <span>zhaider181</span></footer>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="idiomas.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
