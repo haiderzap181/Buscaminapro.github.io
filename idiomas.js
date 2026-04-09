@@ -32,7 +32,6 @@ const idiomas = {
         configTitle: "Configuración",
         muteTitle: "Música Ambiente",
         
-        // NUEVO: Descripciones para el menú de configuración
         descIdioma: "Selecciona el idioma del juego.",
         descSonidos: "Ajusta el volumen a tu gusto.",
         
