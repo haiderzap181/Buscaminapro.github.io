@@ -12,9 +12,12 @@ const sonidoRisa = document.getElementById('sonido-risa');
 
 let mapaReal = [], celdasCache = [], juegoTerminado = false;
 let tiempo = 0, intervaloTiempo, primerClic = true, puntaje = 0, celdasPorRevelar;
-let musicaMutada = false;
 let tamanoGrid = 10; 
 let usoBandera = false; 
+
+let volumenMusica = 0.3;
+let volumenEfectos = 1.0;
+let idiomaActual = 'es'; 
 
 function obtenerRango(bananas, tiempo, tamano) {
     let esGorila = (tamano === 10) || (!tamano && bananas >= 15);
@@ -31,7 +34,6 @@ function obtenerRango(bananas, tiempo, tamano) {
 }
 
 function cargarLogros() {
-    // ACTUALIZADO: Añadimos los dos logros nuevos al objeto inicial
     let logros = JSON.parse(localStorage.getItem('monkey_logros')) || { 
         primerPaso: false, aprendizVeloz: false, velocista: false, purista: false, locura: false 
     };
@@ -56,15 +58,12 @@ function evaluarLogros() {
     let numMinas = parseInt(inputMinas.value);
     let nuevoDesbloqueo = false;
 
-    // ACTUALIZADO: Evaluamos los nuevos logros para Mono Aprendiz (8x8)
     if (tamanoGrid === 8 && !logros.primerPaso) {
         logros.primerPaso = true; nuevoDesbloqueo = true;
     }
     if (tamanoGrid === 8 && tiempo < 30 && !logros.aprendizVeloz) {
         logros.aprendizVeloz = true; nuevoDesbloqueo = true;
     }
-
-    // Logros de Gorila Plateado (10x10) y generales
     if (tamanoGrid === 10 && tiempo < 40 && !logros.velocista) {
         logros.velocista = true; nuevoDesbloqueo = true;
     }
@@ -84,7 +83,11 @@ function evaluarLogros() {
 function cargarRecords() {
     const records = JSON.parse(localStorage.getItem('monkey_records')) || [];
     listaRecordsElemento.innerHTML = '';
-    if (records.length === 0) { listaRecordsElemento.innerHTML = '<tr><td colspan="4" style="padding:20px; opacity:0.6">Sin récords aún</td></tr>'; return; }
+    
+    if (records.length === 0) { 
+        listaRecordsElemento.innerHTML = `<tr><td colspan="4" style="padding:20px; opacity:0.6">${idiomas[idiomaActual].sinRecords}</td></tr>`; 
+        return; 
+    }
     
     records.sort((a, b) => b.puntaje - a.puntaje);
     
@@ -113,11 +116,11 @@ document.getElementById('select-dificultad').addEventListener('change', function
     if (nuevoTamano === 8) {
         inputMinas.min = 10;
         inputMinas.value = 10;
-        textoLimites.innerText = 'Límites: 10 a 63 bananas';
+        textoLimites.innerText = idiomas[idiomaActual].limiteAprendiz;
     } else if (nuevoTamano === 10) {
         inputMinas.min = 15;
         inputMinas.value = 15;
-        textoLimites.innerText = 'Límites: 15 a 99 bananas';
+        textoLimites.innerText = idiomas[idiomaActual].limiteGorila;
     }
 });
 
@@ -221,8 +224,8 @@ function crearTablero() {
 
             if (primerClic && !juegoTerminado) { 
                 intervaloTiempo = setInterval(() => { tiempo++; timerElemento.innerText = tiempo; }, 1000);
-                if(sonidoAmbiente && !musicaMutada) { 
-                    sonidoAmbiente.volume = 0.3; 
+                if(sonidoAmbiente) { 
+                    sonidoAmbiente.volume = volumenMusica; 
                     sonidoAmbiente.play().catch(()=>{}); 
                 }
                 primerClic = false; 
@@ -243,8 +246,8 @@ function revelarCelda(celda) {
         
         if(sonidoAmbiente) sonidoAmbiente.pause(); 
         
-        if(sonidoExplosion) { sonidoExplosion.volume = 0.4; sonidoExplosion.play().catch(()=>{}); }
-        if(sonidoRisa) { sonidoRisa.volume = 0.6; sonidoRisa.play().catch(()=>{}); }
+        if(sonidoExplosion) { sonidoExplosion.volume = 0.4 * volumenEfectos; sonidoExplosion.play().catch(()=>{}); }
+        if(sonidoRisa) { sonidoRisa.volume = 0.6 * volumenEfectos; sonidoRisa.play().catch(()=>{}); }
         
         const gameContainer = document.querySelector('.game-container');
         gameContainer.classList.add('shake-screen');
@@ -258,7 +261,8 @@ function revelarCelda(celda) {
         }, 600);
         
     } else {
-        if(sonidoRevelar) { sonidoRevelar.volume = 0.2; sonidoRevelar.play().catch(()=>{}); }
+        if(sonidoRevelar) { sonidoRevelar.volume = 0.2 * volumenEfectos; sonidoRevelar.play().catch(()=>{}); }
+        
         celda.classList.add('revelada'); celdasPorRevelar--;
         puntaje += 100; puntosElemento.innerText = puntaje;
         const m = contarVecinos(id);
@@ -270,7 +274,8 @@ function revelarCelda(celda) {
             
             if(sonidoAmbiente) sonidoAmbiente.pause(); 
             
-            if(sonidoVictoria) { sonidoVictoria.play().catch(()=>{}); }
+            if(sonidoVictoria) { sonidoVictoria.volume = 1.0 * volumenEfectos; sonidoVictoria.play().catch(()=>{}); }
+            
             evaluarLogros(); 
             guardarRecord();
             
@@ -334,20 +339,32 @@ document.getElementById('btn-jugar-victoria').addEventListener('click', function
     }, 400);
 });
 
+// --- ACTUALIZADO: Paneles de Acordeón "Limpios" (solo uno abierto a la vez) ---
+const panelGui = document.getElementById('instrucciones-content');
+const panelRecords = document.getElementById('records-content');
+const panelLogros = document.getElementById('logros-content');
+
 document.getElementById('btn-toggle-gui').addEventListener('click', () => {
-    document.getElementById('instrucciones-content').classList.toggle('active');
+    panelRecords.classList.remove('active');
+    panelLogros.classList.remove('active');
+    panelGui.classList.toggle('active');
 });
 
 document.getElementById('btn-toggle-records').addEventListener('click', () => {
-    document.getElementById('records-content').classList.toggle('active');
+    panelGui.classList.remove('active');
+    panelLogros.classList.remove('active');
+    panelRecords.classList.toggle('active');
 });
 
 document.getElementById('btn-toggle-logros').addEventListener('click', () => {
-    document.getElementById('logros-content').classList.toggle('active');
+    panelGui.classList.remove('active');
+    panelRecords.classList.remove('active');
+    panelLogros.classList.toggle('active');
 });
+// -----------------------------------------------------------------------------
 
 document.getElementById('btn-borrar-records').addEventListener('click', () => {
-    if (confirm('¿Estás seguro de que deseas restablecer todos los récords y logros? Esta acción no se puede deshacer.')) {
+    if (confirm(idiomas[idiomaActual].alertaBorrar)) {
         localStorage.removeItem('monkey_records');
         localStorage.removeItem('monkey_logros'); 
         cargarRecords(); 
@@ -355,23 +372,112 @@ document.getElementById('btn-borrar-records').addEventListener('click', () => {
     }
 });
 
-const btnMutear = document.getElementById('btn-mutear');
-btnMutear.addEventListener('click', () => {
-    musicaMutada = !musicaMutada; 
-    if(sonidoAmbiente) { sonidoAmbiente.muted = musicaMutada; }
-    
-    if (musicaMutada) {
-        btnMutear.classList.remove('fa-volume-up');
-        btnMutear.classList.add('fa-volume-mute');
-        btnMutear.style.color = '#ff4d4d'; 
-    } else {
-        btnMutear.classList.remove('fa-volume-mute');
-        btnMutear.classList.add('fa-volume-up');
-        btnMutear.style.color = 'var(--accent)'; 
-        if (!primerClic && !juegoTerminado && sonidoAmbiente.paused) {
-            sonidoAmbiente.play().catch(()=>{});
-        }
-    }
+// --- Lógica de la Pantalla de Configuración ---
+const btnConfig = document.getElementById('btn-config');
+const modalConfig = document.getElementById('modal-config');
+const btnCerrarConfig = document.getElementById('btn-cerrar-config');
+const sliderMusica = document.getElementById('slider-musica');
+const sliderEfectos = document.getElementById('slider-efectos');
+
+const btnEs = document.getElementById('btn-es');
+const btnEn = document.getElementById('btn-en');
+
+// Variables temporales para cuando el modal está abierto pero no guardado
+let tempIdioma = 'es';
+
+function actualizarBotonesIdioma(idioma) {
+    btnEs.style.background = idioma === 'es' ? 'var(--accent)' : 'transparent';
+    btnEs.style.color = idioma === 'es' ? 'var(--bg-main)' : 'white';
+    btnEn.style.background = idioma === 'en' ? 'var(--accent)' : 'transparent';
+    btnEn.style.color = idioma === 'en' ? 'var(--bg-main)' : 'white';
+}
+
+// Al abrir el modal, cargamos las variables actuales a las visuales (por si las cambiaron antes y no guardaron)
+btnConfig.addEventListener('click', () => {
+    tempIdioma = idiomaActual;
+    actualizarBotonesIdioma(tempIdioma);
+    sliderMusica.value = volumenMusica;
+    sliderEfectos.value = volumenEfectos;
+    modalConfig.classList.add('mostrar');
 });
 
-window.onload = crearTablero;
+// Al pulsar la X, cerramos sin hacer nada (los cambios visuales se sobreescribirán la próxima vez)
+document.getElementById('btn-cerrar-x').addEventListener('click', () => {
+    modalConfig.classList.remove('mostrar');
+});
+
+// Al pulsar Guardar y Cerrar, aplicamos los cambios
+btnCerrarConfig.addEventListener('click', () => {
+    volumenMusica = parseFloat(sliderMusica.value);
+    volumenEfectos = parseFloat(sliderEfectos.value);
+    if(sonidoAmbiente) sonidoAmbiente.volume = volumenMusica;
+    
+    if (idiomaActual !== tempIdioma) {
+        setIdioma(tempIdioma);
+    }
+    
+    modalConfig.classList.remove('mostrar');
+});
+
+// Los botones de idioma ahora solo cambian el estado temporal
+btnEs.addEventListener('click', () => {
+    tempIdioma = 'es';
+    actualizarBotonesIdioma(tempIdioma);
+});
+btnEn.addEventListener('click', () => {
+    tempIdioma = 'en';
+    actualizarBotonesIdioma(tempIdioma);
+});
+
+function setIdioma(idioma) {
+    idiomaActual = idioma; 
+    actualizarBotonesIdioma(idioma);
+
+    document.getElementById('th-puntos').innerText = idiomas[idioma].thPuntos;
+    document.getElementById('th-tiempo').innerText = idiomas[idioma].thTiempo;
+    document.getElementById('th-bananas').innerText = idiomas[idioma].thBananas;
+    document.getElementById('th-rango').innerText = idiomas[idioma].thRango;
+
+    document.getElementById('btn-reiniciar').innerText = idiomas[idioma].reiniciar;
+    document.getElementById('titulo-opciones').innerText = idiomas[idioma].opciones;
+    
+    document.getElementById('txt-idioma-btn').innerHTML = `<i class="fas fa-globe"></i> ` + idiomas[idioma].idiomaBtn;
+    document.getElementById('txt-desc-idioma').innerText = idiomas[idioma].descIdioma;
+    
+    document.getElementById('txt-sonidos-btn').innerHTML = `<i class="fas fa-music"></i> ` + idiomas[idioma].sonidosBtn;
+    document.getElementById('txt-desc-sonidos').innerText = idiomas[idioma].descSonidos;
+    
+    document.getElementById('lbl-musica').innerHTML = idiomas[idioma].musicaLbl;
+    document.getElementById('lbl-efectos').innerHTML = idiomas[idioma].efectosLbl;
+    document.getElementById('btn-cerrar-config').innerText = idiomas[idioma].cerrarBtn;
+    
+    document.getElementById('btn-borrar-records').innerHTML = idiomas[idioma].borrarBtn;
+    
+    document.getElementById('btn-toggle-records').innerHTML = idiomas[idioma].recordsBtn;
+    document.getElementById('btn-toggle-logros').innerHTML = idiomas[idioma].logrosBtn;
+    document.getElementById('btn-toggle-gui').innerHTML = idiomas[idioma].guiaBtn;
+    
+    document.getElementById('btn-reintentar-modal').innerText = idiomas[idioma].volverBtn;
+    document.getElementById('btn-jugar-victoria').innerText = idiomas[idioma].jugarBtn;
+
+    document.getElementById('select-dificultad').options[0].text = idiomas[idioma].optAprendiz;
+    document.getElementById('select-dificultad').options[1].text = idiomas[idioma].optGorila;
+    document.getElementById('select-dificultad').dispatchEvent(new Event('change'));
+
+    document.getElementById('logros-content').innerHTML = idiomas[idioma].htmlLogros;
+    document.getElementById('instrucciones-content').innerHTML = idiomas[idioma].htmlGuia;
+    
+    document.getElementById('txt-bananas').innerText = idiomas[idioma].bananasLbl;
+    document.getElementById('txt-tablero').innerText = idiomas[idioma].tableroLbl;
+    document.getElementById('txt-puntuacion-derrota').innerText = idiomas[idioma].puntuacionLbl;
+    document.getElementById('txt-puntuacion-victoria').innerText = idiomas[idioma].puntuacionLbl;
+    document.getElementById('btn-config').title = idiomas[idioma].configTitle;
+    
+    cargarLogros();
+    cargarRecords();
+}
+
+window.onload = () => {
+    setIdioma('es');
+    crearTablero();
+};
