@@ -97,7 +97,6 @@ const rangosPDData = [
     { pd: 2000000, icon: "img/ramg_emeralda10.png" }
 ];
 
-// NUEVO: Función para actualizar el icono superior del Rango
 function updateTopRankIcon() {
     let currentRankIdx = 0;
     for (let i = 0; i < rangosPDData.length; i++) {
@@ -113,7 +112,7 @@ function updateTopRankIcon() {
 function addPD(amount) {
     totalPD += amount;
     localStorage.setItem('monkey_pd', totalPD);
-    updateTopRankIcon(); // Se actualiza el icono al ganar PD
+    updateTopRankIcon(); 
 }
 // -------------------------------------------------------
 
@@ -404,6 +403,23 @@ function generateRangosHtml() {
     <div class="rango-lock-list">
     `;
 
+    const txtDesbloqueado = idiomaActual === 'es' ? '¡Desbloqueado!' : 'Unlocked!';
+
+    // --- 1. MOSTRAR GRADOS DESBLOQUEADOS (A TODO COLOR Y CON CHECK VERDE) ---
+    for (let i = 0; i < currentRankIdx; i++) {
+        let r = rangosPDData[i];
+        html += `
+        <div class="rango-lock-item" style="filter: none; opacity: 1; border: 1px solid var(--accent); background: rgba(245, 197, 24, 0.1);">
+            <img src="${r.icon}" class="rango-icon-small" alt="Grado ${i+1}">
+            <div style="flex-grow: 1; text-align: left;">
+                <div style="color: var(--accent); font-weight: 900;">${idiomas[idiomaActual].grado} ${i+1}</div>
+                <div style="color: #4caf50; font-size: 0.8rem; font-weight: bold;"><i class="fas fa-check-circle"></i> ${txtDesbloqueado}</div>
+            </div>
+        </div>
+        `;
+    }
+
+    // --- 2. MOSTRAR GRADOS BLOQUEADOS (EN GRIS Y CON CANDADO) ---
     for (let i = currentRankIdx + 1; i < rangosPDData.length; i++) {
         let r = rangosPDData[i];
         html += `
