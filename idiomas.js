@@ -27,6 +27,16 @@ const idiomas = {
         nivel: "Nvl",
         xpTexto: "XP",
 
+        // Textos Clasificación Global
+        modalGlobalTitle: "TOP 10 MUNDIAL",
+        configPerfilTitle: "CONFIGURAR PERFIL",
+        labelNombre: "Nombre de Explorador:",
+        btnGuardarPerfil: "GUARDAR Y ENTRAR",
+        btnCancelar: "CANCELAR", // NUEVO BOTÓN
+        msgBienvenida: "¡Bienvenido a la competencia global!",
+        thJugador: "Explorador",
+        thGrado: "Rango",
+
         bananasLbl: "Bananas:",
         tableroLbl: "Tablero:",
         puntuacionLbl: "Puntuación:",
@@ -39,7 +49,6 @@ const idiomas = {
         modalGuiaTitle: "GUÍA DEL EXPLORADOR",
         cerrarModalBtn: "CERRAR",
 
-        // HTML Original de Logros
         htmlLogros: `
             <div class="instruccion-item">
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -88,7 +97,6 @@ const idiomas = {
             </div>
         `,
 
-        // HTML Original de Guía (Modificado para empezar desde Límites de Dificultad)
         htmlGuia: `
             <div class="instruccion-item">
                 <p><strong><i class="fas fa-sliders-h"></i> Límites de Dificultad:</strong></p>
@@ -126,7 +134,6 @@ const idiomas = {
         volverBtn: "TRY AGAIN",
         jugarBtn: "PLAY AGAIN",
         
-        // Textos del panel de Rangos y XP
         modalRecordsTitle: "RANKS & GRADES",
         borrarBtn: '<i class="fas fa-sync-alt"></i> Reset Progress',
         alertaBorrar: 'Are you sure you want to reset all your Grades, XP and Achievements? This action cannot be undone.',
@@ -137,6 +144,15 @@ const idiomas = {
         rangoMaximo: "MAX GRADE!",
         nivel: "Lvl",
         xpTexto: "XP",
+
+        modalGlobalTitle: "GLOBAL TOP 10",
+        configPerfilTitle: "PROFILE SETUP",
+        labelNombre: "Explorer Name:",
+        btnGuardarPerfil: "SAVE & JOIN",
+        btnCancelar: "CANCEL", // NUEVO BOTÓN
+        msgBienvenida: "Welcome to global competition!",
+        thJugador: "Explorer",
+        thGrado: "Rank",
 
         bananasLbl: "Bananas:",
         tableroLbl: "Board:",
@@ -150,7 +166,6 @@ const idiomas = {
         modalGuiaTitle: "EXPLORER'S GUIDE",
         cerrarModalBtn: "CLOSE",
 
-        // HTML Original de Logros
         htmlLogros: `
             <div class="instruccion-item">
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -199,7 +214,6 @@ const idiomas = {
             </div>
         `,
 
-        // HTML Original de Guía (Modificado para empezar desde Límites de Dificultad)
         htmlGuia: `
             <div class="instruccion-item">
                 <p><strong><i class="fas fa-sliders-h"></i> Difficulty Limits:</strong></p>
