@@ -12,29 +12,34 @@ const idiomas = {
         musicaLbl: '<i class="fas fa-headphones"></i> Música General',
         efectosLbl: '<i class="fas fa-volume-up"></i> Efectos Especiales',
         cerrarBtn: "GUARDAR Y CERRAR",
-        recordsBtn: '<i class="fas fa-medal"></i> Mejores Récords <i class="fas fa-chevron-down icon-arrow"></i>',
-        logrosBtn: '<i class="fas fa-award"></i> Logros y Medallas <i class="fas fa-chevron-down icon-arrow"></i>',
-        guiaBtn: '<i class="fas fa-book-open"></i> Guía del Explorador <i class="fas fa-chevron-down icon-arrow"></i>',
         volverBtn: "VOLVER A INTENTAR",
         jugarBtn: "JUGAR DE NUEVO",
         
-        thPuntos: "Puntos",
-        thTiempo: "Tiempo",
-        thBananas: "Bananas",
-        thRango: "Rango",
-        sinRecords: "Sin récords aún",
-        borrarBtn: '<i class="fas fa-trash-alt"></i> Restablecer Récords',
-        alertaBorrar: '¿Estás seguro de que deseas restablecer todos los récords y logros? Esta acción no se puede deshacer.',
+        // Textos del panel de Rangos y XP
+        modalRecordsTitle: "RANGOS Y GRADOS",
+        borrarBtn: '<i class="fas fa-sync-alt"></i> Restablecer Progreso',
+        alertaBorrar: '¿Estás seguro de que deseas restablecer todos tus Grados, XP y Logros? Esta acción no se puede deshacer.',
+        gradoActual: "Grado Actual",
+        grado: "Grado",
+        requierePD: "Desbloquea a los",
+        pdTexto: "PD",
+        rangoMaximo: "¡GRADO MÁXIMO!",
+        nivel: "Nvl",
+        xpTexto: "XP",
 
         bananasLbl: "Bananas:",
         tableroLbl: "Tablero:",
         puntuacionLbl: "Puntuación:",
         configTitle: "Configuración",
         muteTitle: "Música Ambiente",
-        
         descIdioma: "Selecciona el idioma del juego.",
         descSonidos: "Ajusta el volumen a tu gusto.",
-        
+
+        modalLogrosTitle: "LOGROS Y MEDALLAS",
+        modalGuiaTitle: "GUÍA DEL EXPLORADOR",
+        cerrarModalBtn: "CERRAR",
+
+        // HTML Original de Logros
         htmlLogros: `
             <div class="instruccion-item">
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -83,25 +88,8 @@ const idiomas = {
             </div>
         `,
 
+        // HTML Original de Guía (Modificado para empezar desde Límites de Dificultad)
         htmlGuia: `
-            <div class="instruccion-item">
-                <p><strong><i class="fas fa-star"></i> Sistema de Rangos:</strong></p>
-                <p>¡Los rangos ahora se adaptan a la dificultad del tablero!</p>
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango03.png" class="icono-rango" alt="Rango Épico">
-                        <span style="font-size: 0.8rem;"><strong>Épico:</strong> <br>Gorila (10x10): 30+ bananas o 20+ en &le; 60s.<br>Aprendiz (8x8): 25+ bananas o 15+ en &le; 40s.</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango02.png" class="icono-rango" alt="Rango Avanzado">
-                        <span style="font-size: 0.8rem;"><strong>Avanzado:</strong> <br>Gorila (10x10): 20+ bananas o 15+ en &le; 90s.<br>Aprendiz (8x8): 15+ bananas o 10+ en &le; 60s.</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango01.png" class="icono-rango" alt="Rango Básico">
-                        <span style="font-size: 0.8rem;"><strong>Explorador:</strong> Supera cualquier otro desafío estándar en tu tablero.</span>
-                    </div>
-                </div>
-            </div>
             <div class="instruccion-item">
                 <p><strong><i class="fas fa-sliders-h"></i> Límites de Dificultad:</strong></p>
                 <p>Puedes personalizar la cantidad de bananas, pero cada tablero tiene sus límites para mantener el reto:</p>
@@ -135,30 +123,34 @@ const idiomas = {
         musicaLbl: '<i class="fas fa-headphones"></i> Main Music',
         efectosLbl: '<i class="fas fa-volume-up"></i> Sound Effects',
         cerrarBtn: "SAVE & CLOSE",
-        recordsBtn: '<i class="fas fa-medal"></i> Best Records <i class="fas fa-chevron-down icon-arrow"></i>',
-        logrosBtn: '<i class="fas fa-award"></i> Achievements & Medals <i class="fas fa-chevron-down icon-arrow"></i>',
-        guiaBtn: '<i class="fas fa-book-open"></i> Explorer\'s Guide <i class="fas fa-chevron-down icon-arrow"></i>',
         volverBtn: "TRY AGAIN",
         jugarBtn: "PLAY AGAIN",
         
-        thPuntos: "Score",
-        thTiempo: "Time",
-        thBananas: "Bananas",
-        thRango: "Rank",
-        sinRecords: "No records yet",
-        borrarBtn: '<i class="fas fa-trash-alt"></i> Reset Records',
-        alertaBorrar: 'Are you sure you want to reset all records and achievements? This action cannot be undone.',
+        // Textos del panel de Rangos y XP
+        modalRecordsTitle: "RANKS & GRADES",
+        borrarBtn: '<i class="fas fa-sync-alt"></i> Reset Progress',
+        alertaBorrar: 'Are you sure you want to reset all your Grades, XP and Achievements? This action cannot be undone.',
+        gradoActual: "Current Grade",
+        grado: "Grade",
+        requierePD: "Unlocks at",
+        pdTexto: "GP",
+        rangoMaximo: "MAX GRADE!",
+        nivel: "Lvl",
+        xpTexto: "XP",
 
         bananasLbl: "Bananas:",
         tableroLbl: "Board:",
         puntuacionLbl: "Score:",
         configTitle: "Settings",
         muteTitle: "Background Music",
-        
-        // NUEVO: Descripciones para el menú de configuración
         descIdioma: "Select the game language.",
         descSonidos: "Adjust the volume to your liking.",
 
+        modalLogrosTitle: "ACHIEVEMENTS & MEDALS",
+        modalGuiaTitle: "EXPLORER'S GUIDE",
+        cerrarModalBtn: "CLOSE",
+
+        // HTML Original de Logros
         htmlLogros: `
             <div class="instruccion-item">
                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -207,25 +199,8 @@ const idiomas = {
             </div>
         `,
 
+        // HTML Original de Guía (Modificado para empezar desde Límites de Dificultad)
         htmlGuia: `
-            <div class="instruccion-item">
-                <p><strong><i class="fas fa-star"></i> Rank System:</strong></p>
-                <p>Ranks now adapt to the board difficulty!</p>
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango03.png" class="icono-rango" alt="Epic Rank">
-                        <span style="font-size: 0.8rem;"><strong>Epic:</strong> <br>Gorilla (10x10): 30+ bananas or 20+ in &le; 60s.<br>Apprentice (8x8): 25+ bananas or 15+ in &le; 40s.</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango02.png" class="icono-rango" alt="Advanced Rank">
-                        <span style="font-size: 0.8rem;"><strong>Advanced:</strong> <br>Gorilla (10x10): 20+ bananas or 15+ in &le; 90s.<br>Apprentice (8x8): 15+ bananas or 10+ in &le; 60s.</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="img/rango01.png" class="icono-rango" alt="Basic Rank">
-                        <span style="font-size: 0.8rem;"><strong>Explorer:</strong> Beat any other standard challenge.</span>
-                    </div>
-                </div>
-            </div>
             <div class="instruccion-item">
                 <p><strong><i class="fas fa-sliders-h"></i> Difficulty Limits:</strong></p>
                 <p>You can customize the amount of bananas, but each board has its limits:</p>
