@@ -46,10 +46,7 @@ body {
     display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 100%;
 }
 .top-rank-icon {
-    height: 35px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); transition: transform 0.3s ease;
-}
-.top-rank-icon:hover {
-    transform: scale(1.1);
+    height: 35px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
 }
 .xp-badge {
     background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; font-weight: 900;
@@ -166,7 +163,8 @@ body {
 }
 
 .bottomActionPanel {
-    display: flex; justify-content: center; align-items: center; gap: 30px;
+    display: flex; justify-content: center; align-items: center; 
+    gap: 15px; /* Reducido un poco el gap para que quepan 4 botones cómodamente */
     margin-top: 0; margin-bottom: 15px; padding: 0; 
     background-image: url('img/panel-inferior.png'); background-size: 100% 100%; 
     background-position: center; background-repeat: no-repeat;
@@ -181,7 +179,8 @@ body {
 }
 
 .btnIcon { 
-    height: 55px; width: auto; object-fit: contain; 
+    height: 50px; /* Reducido ligeramente de 55 a 50 para mejor ajuste con 4 botones */
+    width: auto; object-fit: contain; 
     filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); 
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -263,13 +262,15 @@ body {
     filter: grayscale(1); opacity: 0.6; border: 1px dashed rgba(255,255,255,0.1);
 }
 
-.dynamicList { list-style: none; padding: 0; margin: 0; }
-.dynamicListItem { display: flex; align-items: center; gap: 15px; padding: 10px; border-bottom: 1px solid rgba(255, 202, 40, 0.15); }
 .instruccion-item { margin-bottom: 15px; font-size: 0.88rem; line-height: 1.5; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; }
 .guia-colores { margin-top: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; display: flex; justify-content: center; gap: 20px; font-weight: 900; }
-.guideStep { color: white; margin-bottom: 15px; border-left: 3px solid #ffca28; padding-left: 10px; font-size: 0.85rem;}
-.guideTitle { color: #ffda0c; font-weight: bold; font-size: 1rem; }
-.guideImageExample { max-height: 40px; width: auto; object-fit: contain; }
+
+/* NUEVO: ESTILOS PARA LA TABLA GLOBAL */
+.tabla-global { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
+.tabla-global th { color: var(--accent); padding: 8px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+.tabla-global td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+.rank-pos { font-weight: 900; color: var(--accent); }
+.rank-badge-img { height: 25px; width: auto; object-fit: contain; }
 
 footer { margin-top: 30px; opacity: 0.6; font-size: 0.85rem; text-align: center; width: 100%; }
 
@@ -279,7 +280,7 @@ footer { margin-top: 30px; opacity: 0.6; font-size: 0.85rem; text-align: center;
 @media (max-width: 480px) {
     #tablero { gap: 2px !important; }
     .celda { font-size: 0.95rem !important; }
-    .actionBtn { padding: 8px 10px; }
+    .actionBtn { padding: 5px; }
     .btnIcon { height: 35px; } 
 }
 
