@@ -48,6 +48,9 @@
         <div id="tablero"></div>
         
         <div class="bottomActionPanel">
+            <button id="btnclasificacion" class="actionBtn">
+                <img src="img/btnclasificacion.png" alt="Clasificación" class="btnIcon">
+            </button>
             <button id="btnrecors" class="actionBtn">
                 <img src="img/btnrecors.png" alt="Récords" class="btnIcon">
             </button>
@@ -96,7 +99,7 @@
                 <h2 id="modalTitle" style="color: var(--accent); margin-bottom: 15px;">TÍTULO</h2>
                 
                 <div id="modalScrollContent" class="config-scroll-area" style="text-align: left;">
-                    </div>
+                </div>
                 
                 <button id="btn-close-content" style="margin-top: 10px; width: 100%; padding: 12px; background: linear-gradient(180deg, #f5c518 0%, #e2b300 100%); color: #1a1a2e; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #b38f00; font-family: 'Nunito', sans-serif;">CERRAR</button>
             </div>
@@ -122,6 +125,9 @@
 
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
     <audio id="sonido-explosion" src="audio/explosion.mp3"></audio>
     <audio id="sonido-revelar" src="audio/revelar.mp3"></audio>
     <audio id="sonido-victoria" src="audio/victoria.mp3"></audio>
