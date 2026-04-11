@@ -23,6 +23,15 @@
                 <div class="stat-item"><i class="fas fa-trophy"></i> <span id="puntos">0</span></div>
                 <div class="stat-item"><img src="img/btnconfi.png" id="btn-config" alt="Configuración" title="Configuración"></div>
             </div>
+
+            <div class="xp-system-container">
+                <div class="xp-badge"><span id="txt-nivel-lbl">Nvl</span> <span id="player-level">1</span></div>
+                <div class="xp-bar-bg">
+                    <div class="xp-bar-fill" id="xp-bar"></div>
+                    <div class="xp-text" id="xp-text">0 / 500 XP</div>
+                </div>
+                <img src="img/ramg_plata01.png" id="icono-rango-top" class="top-rank-icon" alt="Rango Actual">
+            </div>
             
             <p class="info-rango-bananas">
                 <span id="txt-tablero">Tablero:</span> 
@@ -38,52 +47,24 @@
 
         <div id="tablero"></div>
         
-        <section class="records-container">
-            <button id="btn-toggle-records" class="gui-toggle-btn">
-                <i class="fas fa-medal"></i> Mejores Récords <i class="fas fa-chevron-down icon-arrow"></i>
+        <div class="bottomActionPanel">
+            <button id="btnrecors" class="actionBtn">
+                <img src="img/btnrecors.png" alt="Récords" class="btnIcon">
             </button>
-            <div id="records-content" class="instrucciones-content">
-                <table class="tabla-records">
-                    <thead>
-                        <tr>
-                            <th id="th-puntos">Puntos</th>
-                            <th id="th-tiempo">Tiempo</th>
-                            <th id="th-bananas">Bananas</th>
-                            <th id="th-rango">Rango</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-records"></tbody>
-                </table>
-                <div class="btn-borrar-container">
-                    <button id="btn-borrar-records"><i class="fas fa-trash-alt"></i> Restablecer Récords</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="records-container">
-            <button id="btn-toggle-logros" class="gui-toggle-btn">
-                <i class="fas fa-award"></i> Logros y Medallas <i class="fas fa-chevron-down icon-arrow"></i>
+            <button id="btnlogros" class="actionBtn">
+                <img src="img/btnlogros.png" alt="Logros" class="btnIcon">
             </button>
-            <div id="logros-content" class="instrucciones-content">
-                </div>
-        </section>
-        
-        <section id="instrucciones-juego">
-            <button id="btn-toggle-gui" class="gui-toggle-btn">
-                <i class="fas fa-book-open"></i> Guía del Explorador <i class="fas fa-chevron-down icon-arrow"></i>
+            <button id="btnguia" class="actionBtn">
+                <img src="img/btnguia.png" alt="Guía" class="btnIcon">
             </button>
-            <div id="instrucciones-content" class="instrucciones-content">
-                </div>
-        </section>
+        </div>
 
         <div id="modal-config" class="modal-oculto">
-            <div class="modal-contenido" style="padding: 20px 15px;">
+            <div class="modal-contenido config-modal-box" style="padding: 20px 15px;">
                 <i class="fas fa-times" id="btn-cerrar-x" title="Cerrar"></i>
-                
                 <h2 id="titulo-opciones" style="color: var(--accent); margin-bottom: 15px;">Opciones</h2>
                 
                 <div class="config-scroll-area">
-                    
                     <div class="config-section">
                         <h3 id="txt-idioma-btn" style="font-size: 1rem; color: var(--accent); margin-bottom: 5px;"><i class="fas fa-globe"></i> Idioma / Language</h3>
                         <p id="txt-desc-idioma" style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px;">Selecciona el idioma del juego.</p>
@@ -92,7 +73,6 @@
                             <button id="btn-en" style="flex: 1; padding: 8px; border-radius: 5px; border: 1px solid var(--accent); background: transparent; color: white; font-weight: bold; cursor: pointer; font-family: 'Nunito', sans-serif;">English</button>
                         </div>
                     </div>
-
                     <div class="config-section">
                         <h3 id="txt-sonidos-btn" style="font-size: 1rem; color: var(--accent); margin-bottom: 5px;"><i class="fas fa-music"></i> Sonidos</h3>
                         <p id="txt-desc-sonidos" style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px;">Ajusta el volumen a tu gusto.</p>
@@ -105,16 +85,27 @@
                             <input type="range" id="slider-efectos" min="0" max="1" step="0.01" value="1">
                         </div>
                     </div>
-
-                    </div>
-
+                </div>
                 <button id="btn-cerrar-config" style="margin-top: 10px;">GUARDAR Y CERRAR</button>
+            </div>
+        </div>
+
+        <div id="contentModal" class="modal-oculto">
+            <div class="modal-contenido config-modal-box" style="padding: 20px 15px;">
+                <i class="fas fa-times" id="btn-close-content-x" title="Cerrar"></i>
+                <h2 id="modalTitle" style="color: var(--accent); margin-bottom: 15px;">TÍTULO</h2>
+                
+                <div id="modalScrollContent" class="config-scroll-area" style="text-align: left;">
+                    </div>
+                
+                <button id="btn-close-content" style="margin-top: 10px; width: 100%; padding: 12px; background: linear-gradient(180deg, #f5c518 0%, #e2b300 100%); color: #1a1a2e; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #b38f00; font-family: 'Nunito', sans-serif;">CERRAR</button>
             </div>
         </div>
 
         <div id="modal-derrota" class="modal-oculto">
             <div class="modal-contenido">
                 <img src="img/perdiste.png" alt="Mono Burlón" class="img-derrota">
+                <p style="font-size: 0.9rem; color: #00c6ff; margin-top: -10px; margin-bottom: 10px; font-weight: 900;">+ <span id="xp-ganada-derrota" style="color: #00c6ff; font-size: 1.1rem;">0</span> XP</p>
                 <p><span id="txt-puntuacion-derrota">Puntuación:</span> <span id="puntuacion-final">0</span></p>
                 <button id="btn-reintentar-modal">VOLVER A INTENTAR</button>
             </div>
@@ -123,6 +114,7 @@
         <div id="modal-victoria" class="modal-oculto" id-fondo="victoria">
             <div class="modal-contenido">
                 <img src="img/ganaste.png" alt="Mono Furioso" class="img-derrota">
+                <p style="font-size: 0.9rem; color: #00c6ff; margin-top: -10px; margin-bottom: 10px; font-weight: 900;">+ <span id="xp-ganada-victoria" style="color: #00c6ff; font-size: 1.1rem;">0</span> XP</p>
                 <p><span id="txt-puntuacion-victoria">Puntuación:</span> <span id="puntuacion-final-victoria">0</span></p>
                 <button id="btn-jugar-victoria">JUGAR DE NUEVO</button>
             </div>
